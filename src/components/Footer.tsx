@@ -1,6 +1,7 @@
 import React from 'react';
 import { Facebook, Instagram } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+import logoImg from '../assets/logo.png';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -11,7 +12,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-3">
             <img 
-              src="/logo.png" 
+              src={logoImg} 
               alt="Maczkó Tetőfedés Logo" 
               className="h-10 w-auto" 
               referrerPolicy="no-referrer" 

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, Globe } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useLanguage } from '../LanguageContext';
+import logoImg from '../assets/logo.png';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -37,7 +38,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <a href="#home" className="flex items-center md:gap-4 group">
           <img 
-            src="/logo.png" 
+            src={logoImg} 
             alt="Maczkó Tetőfedés Logo" 
             className={cn(
               "w-auto transition-all duration-500 group-hover:scale-105 block",
