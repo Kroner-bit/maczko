@@ -273,6 +273,16 @@ export default function Admin() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3 self-end md:self-center">
+                        {sub.phone && (
+                          <a
+                            href={`tel:${sub.phone}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all flex items-center justify-center"
+                            title="Hívás indítása"
+                          >
+                            <Phone className="w-5 h-5" />
+                          </a>
+                        )}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
