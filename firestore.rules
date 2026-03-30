@@ -1,0 +1,86 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: submissions
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required)
+    //   - email: string (required, email format)
+    //   - phone: string (optional)
+    //   - service: string (optional)
+    //   - message: string (required)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: admins
+    // Document ID: email address
+    // Fields:
+    //   - addedBy: string (uid)
+    //   - addedAt: timestamp
+    //
+    // Collection: users
+    // Document ID: userId (auth.uid)
+    // Fields:
+    //   - email: string (required)
+    //   - role: string (required, 'admin')
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (
+          (request.auth.token.email != null && (
+            exists(/databases/$(database)/documents/admins/$(request.auth.token.email.lower())) ||
+            request.auth.token.email.lower() == "barni.kroner@gmail.com"
+          )) ||
+          // Fallback for user document role
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin")
+        );
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidSubmission(data) {
+      return data.keys().hasAll(['name', 'email', 'message', 'createdAt']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             isValidEmail(data.email) &&
+             data.message is string && data.message.size() > 0 && data.message.size() < 2000 &&
+             data.createdAt is timestamp;
+    }
+
+    // Rules
+    match /submissions/{submissionId} {
+      // Anyone can submit a contact form
+      allow create: if isValidSubmission(request.resource.data);
+      // Only admins can read or delete submissions
+      allow read, delete: if isAdmin();
+      // No updates allowed to submissions
+      allow update: if false;
+    }
+
+    match /admins/{email} {
+      // Only admins can manage the admin list
+      // Prevent deletion of the main admin document if it exists
+      allow read, create, update: if isAdmin();
+      allow delete: if isAdmin() && email.lower() != "barni.kroner@gmail.com";
+    }
+
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Only admins can manage users
+      allow write: if isAdmin();
+    }
+  }
+}
