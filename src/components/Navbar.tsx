@@ -40,8 +40,8 @@ export default function Navbar() {
             src="/logo.png" 
             alt="Maczkó Tetőfedés Logo" 
             className={cn(
-              "w-auto transition-all duration-500 group-hover:scale-105 hidden md:block",
-              isScrolled ? "h-12 lg:h-16" : "h-16 lg:h-24"
+              "w-auto transition-all duration-500 group-hover:scale-105 block",
+              isScrolled ? "h-10 md:h-12 lg:h-16" : "h-12 md:h-16 lg:h-24"
             )}
             referrerPolicy="no-referrer" 
           />
