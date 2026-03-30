@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-3">
             <img 
-              src="/logo.png" 
+              src="https://kephost.net/p/MjM0NDAxMg.png" 
               alt="Maczkó Tetőfedés Logo" 
               className="h-10 w-auto" 
               referrerPolicy="no-referrer" 

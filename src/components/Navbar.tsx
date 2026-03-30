@@ -37,7 +37,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <a href="#home" className="flex items-center md:gap-4 group">
           <img 
-            src="/logo.png" 
+            src="https://kephost.net/p/MjM0NDAxMg.png" 
             alt="Maczkó Tetőfedés Logo" 
             className={cn(
               "w-auto transition-all duration-500 group-hover:scale-105 block",
