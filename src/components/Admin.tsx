@@ -35,6 +35,7 @@ export default function Admin() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'submissions' | 'malta_submissions' | 'admins' | 'settings'>('submissions');
   const [newAdminEmail, setNewAdminEmail] = useState('');
@@ -66,6 +67,9 @@ export default function Admin() {
 
       try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          setDarkMode(userDoc.data().darkMode || false);
+        }
         const adminDoc = user.email ? await getDoc(doc(db, 'admins', user.email)) : null;
         
         const isAdmin = 
@@ -233,7 +237,18 @@ export default function Admin() {
   const handleSaveSettings = async () => {
     setIsSavingSettings(true);
     try {
+      // Save global settings
       await setDoc(doc(db, 'settings', 'global'), settings);
+      
+      // Save user-specific dark mode setting
+      if (auth.currentUser) {
+        await setDoc(doc(db, 'users', auth.currentUser.uid), { 
+          darkMode,
+          email: auth.currentUser.email,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      }
+      
       setNotification({ message: 'Beállítások sikeresen mentve!', type: 'success' });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, 'settings/global');
@@ -262,33 +277,33 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-light py-8 md:py-12 px-4 md:px-6">
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-[#121212] text-white' : 'bg-light text-dark'} py-8 md:py-12 px-4 md:px-6`}>
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 md:mb-12">
           <div className="w-full">
-            <h1 className="text-3xl md:text-4xl font-display font-bold text-dark mb-2">Adminisztrációs Felület</h1>
+            <h1 className={`text-3xl md:text-4xl font-display font-bold mb-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Adminisztrációs Felület</h1>
             <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
               <button
                 onClick={() => setActiveTab('submissions')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'submissions' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white text-dark/40 hover:text-dark'}`}
+                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'submissions' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
               >
                 Üzenetek
               </button>
               <button
                 onClick={() => setActiveTab('malta_submissions')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'malta_submissions' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white text-dark/40 hover:text-dark'}`}
+                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'malta_submissions' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
               >
                 Máltai Üzenetek
               </button>
               <button
                 onClick={() => setActiveTab('admins')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'admins' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white text-dark/40 hover:text-dark'}`}
+                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'admins' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
               >
                 Adminok
               </button>
               <button
                 onClick={() => setActiveTab('settings')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'settings' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white text-dark/40 hover:text-dark'}`}
+                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'settings' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
               >
                 Beállítások
               </button>
@@ -296,7 +311,7 @@ export default function Admin() {
           </div>
           <button
             onClick={handleLogout}
-            className="w-full md:w-auto px-6 py-3 rounded-2xl bg-white border border-black/5 text-dark font-bold flex items-center justify-center gap-2 hover:bg-red-50 hover:text-red-600 transition-all shadow-sm"
+            className={`w-full md:w-auto px-6 py-3 rounded-2xl border font-bold flex items-center justify-center gap-2 transition-all shadow-sm ${darkMode ? 'bg-white/5 border-white/10 text-white hover:bg-red-500/10 hover:text-red-500' : 'bg-white border-black/5 text-dark hover:bg-red-50 hover:text-red-600'}`}
           >
             <LogOut className="w-5 h-5" />
             Kijelentkezés
@@ -306,34 +321,34 @@ export default function Admin() {
         {activeTab === 'submissions' ? (
           <>
             <div className="mb-6 px-2">
-              <p className="text-dark/60">Összesen {submissions.length} üzenet érkezett.</p>
+              <p className={darkMode ? 'text-white/60' : 'text-dark/60'}>Összesen {submissions.length} üzenet érkezett.</p>
             </div>
             {submissions.length === 0 ? (
-              <div className="p-8 md:p-16 bg-white rounded-[32px] md:rounded-[40px] border border-black/5 shadow-xl text-center">
+              <div className={`p-8 md:p-16 rounded-[32px] md:rounded-[40px] border shadow-xl text-center ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                   <MessageSquare className="text-primary w-8 h-8 md:w-10 md:h-10" />
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold text-dark mb-2">Nincs még üzenet</h2>
-                <p className="text-dark/60">Amint valaki kitölti a kapcsolatfelvételi űrlapot, itt fog megjelenni.</p>
+                <h2 className={`text-xl md:text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Nincs még üzenet</h2>
+                <p className={darkMode ? 'text-white/60' : 'text-dark/60'}>Amint valaki kitölti a kapcsolatfelvételi űrlapot, itt fog megjelenni.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {submissions.map((sub) => (
                   <div
                     key={sub.id}
-                    className="bg-white rounded-3xl border border-black/5 shadow-sm overflow-hidden"
+                    className={`rounded-3xl border shadow-sm overflow-hidden ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}
                   >
                     <div 
                       onClick={() => toggleExpand(sub.id)}
-                      className="p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer hover:bg-light/50 transition-colors"
+                      className={`p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer transition-colors ${darkMode ? 'hover:bg-white/5' : 'hover:bg-light/50'}`}
                     >
                       <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
                         <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">
                           <User className="text-primary w-5 h-5 md:w-6 md:h-6" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-bold text-dark text-base md:text-lg truncate">{sub.name}</h3>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm text-dark/40">
+                          <h3 className={`font-bold text-base md:text-lg truncate ${darkMode ? 'text-white' : 'text-dark'}`}>{sub.name}</h3>
+                          <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>
                             <span className="flex items-center gap-1 truncate max-w-[150px] md:max-w-none"><Mail className="w-3 h-3 shrink-0" /> {sub.email}</span>
                             <span className="flex items-center gap-1"><Calendar className="w-3 h-3 shrink-0" /> {sub.createdAt?.toDate().toLocaleString('hu-HU', { dateStyle: 'short', timeStyle: 'short' })}</span>
                           </div>
@@ -359,25 +374,25 @@ export default function Admin() {
                         >
                           <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
-                        {expandedId === sub.id ? <ChevronUp className="w-5 h-5 md:w-6 md:h-6 text-dark/20" /> : <ChevronDown className="w-5 h-5 md:w-6 md:h-6 text-dark/20" />}
+                        {expandedId === sub.id ? <ChevronUp className={`w-5 h-5 md:w-6 md:h-6 ${darkMode ? 'text-white/20' : 'text-dark/20'}`} /> : <ChevronDown className={`w-5 h-5 md:w-6 md:h-6 ${darkMode ? 'text-white/20' : 'text-dark/20'}`} />}
                       </div>
                     </div>
 
                     {expandedId === sub.id && (
-                      <div className="border-t border-black/5">
-                        <div className="p-6 md:p-8 bg-light/30">
+                      <div className={`border-t ${darkMode ? 'border-white/10' : 'border-black/5'}`}>
+                        <div className={`p-6 md:p-8 ${darkMode ? 'bg-white/5' : 'bg-light/30'}`}>
                           <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
                             <div className="space-y-4">
                               <div>
-                                <p className="text-[10px] md:text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Telefonszám</p>
-                                <p className="text-base md:text-lg font-bold text-dark flex items-center gap-2">
+                                <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest mb-1 ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Telefonszám</p>
+                                <p className={`text-base md:text-lg font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-dark'}`}>
                                   <Phone className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                                   {sub.phone || 'Nincs megadva'}
                                 </p>
                               </div>
                               <div>
-                                <p className="text-[10px] md:text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Email cím</p>
-                                <p className="text-base md:text-lg font-bold text-dark flex items-center gap-2 break-all">
+                                <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest mb-1 ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Email cím</p>
+                                <p className={`text-base md:text-lg font-bold flex items-center gap-2 break-all ${darkMode ? 'text-white' : 'text-dark'}`}>
                                   <Mail className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                                   {sub.email}
                                 </p>
@@ -385,8 +400,8 @@ export default function Admin() {
                             </div>
                           </div>
                           <div>
-                            <p className="text-[10px] md:text-xs font-bold text-dark/40 uppercase tracking-widest mb-2">Üzenet</p>
-                            <div className="p-4 md:p-6 bg-white rounded-2xl border border-black/5 text-dark leading-relaxed text-sm md:text-base">
+                            <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest mb-2 ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Üzenet</p>
+                            <div className={`p-4 md:p-6 rounded-2xl border leading-relaxed text-sm md:text-base ${darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-black/5 text-dark'}`}>
                               {sub.message}
                             </div>
                           </div>
@@ -401,34 +416,34 @@ export default function Admin() {
         ) : activeTab === 'malta_submissions' ? (
           <>
             <div className="mb-6 px-2">
-              <p className="text-dark/60">Összesen {maltaSubmissions.length} máltai üzenet érkezett.</p>
+              <p className={darkMode ? 'text-white/60' : 'text-dark/60'}>Összesen {maltaSubmissions.length} máltai üzenet érkezett.</p>
             </div>
             {maltaSubmissions.length === 0 ? (
-              <div className="p-8 md:p-16 bg-white rounded-[32px] md:rounded-[40px] border border-black/5 shadow-xl text-center">
+              <div className={`p-8 md:p-16 rounded-[32px] md:rounded-[40px] border shadow-xl text-center ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                   <MessageSquare className="text-primary w-8 h-8 md:w-10 md:h-10" />
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold text-dark mb-2">Nincs még máltai üzenet</h2>
-                <p className="text-dark/60">Amint valaki kitölti a máltai kapcsolatfelvételi űrlapot, itt fog megjelenni.</p>
+                <h2 className={`text-xl md:text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Nincs még máltai üzenet</h2>
+                <p className={darkMode ? 'text-white/60' : 'text-dark/60'}>Amint valaki kitölti a máltai kapcsolatfelvételi űrlapot, itt fog megjelenni.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {maltaSubmissions.map((sub) => (
                   <div
                     key={sub.id}
-                    className="bg-white rounded-3xl border border-black/5 shadow-sm overflow-hidden"
+                    className={`rounded-3xl border shadow-sm overflow-hidden ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}
                   >
                     <div 
                       onClick={() => toggleExpand(sub.id)}
-                      className="p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer hover:bg-light/50 transition-colors"
+                      className={`p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer transition-colors ${darkMode ? 'hover:bg-white/5' : 'hover:bg-light/50'}`}
                     >
                       <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
                         <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">
                           <User className="text-primary w-5 h-5 md:w-6 md:h-6" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-bold text-dark text-base md:text-lg truncate">{sub.name}</h3>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm text-dark/40">
+                          <h3 className={`font-bold text-base md:text-lg truncate ${darkMode ? 'text-white' : 'text-dark'}`}>{sub.name}</h3>
+                          <div className={`flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>
                             <span className="flex items-center gap-1 truncate max-w-[150px] md:max-w-none"><Mail className="w-3 h-3 shrink-0" /> {sub.email}</span>
                             <span className="flex items-center gap-1"><Calendar className="w-3 h-3 shrink-0" /> {sub.createdAt?.toDate().toLocaleString('hu-HU', { dateStyle: 'short', timeStyle: 'short' })}</span>
                           </div>
@@ -454,25 +469,25 @@ export default function Admin() {
                         >
                           <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
-                        {expandedId === sub.id ? <ChevronUp className="w-5 h-5 md:w-6 md:h-6 text-dark/20" /> : <ChevronDown className="w-5 h-5 md:w-6 md:h-6 text-dark/20" />}
+                        {expandedId === sub.id ? <ChevronUp className={`w-5 h-5 md:w-6 md:h-6 ${darkMode ? 'text-white/20' : 'text-dark/20'}`} /> : <ChevronDown className={`w-5 h-5 md:w-6 md:h-6 ${darkMode ? 'text-white/20' : 'text-dark/20'}`} />}
                       </div>
                     </div>
 
                     {expandedId === sub.id && (
-                      <div className="border-t border-black/5">
-                        <div className="p-6 md:p-8 bg-light/30">
+                      <div className={`border-t ${darkMode ? 'border-white/10' : 'border-black/5'}`}>
+                        <div className={`p-6 md:p-8 ${darkMode ? 'bg-white/5' : 'bg-light/30'}`}>
                           <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
                             <div className="space-y-4">
                               <div>
-                                <p className="text-[10px] md:text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Telefonszám</p>
-                                <p className="text-base md:text-lg font-bold text-dark flex items-center gap-2">
+                                <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest mb-1 ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Telefonszám</p>
+                                <p className={`text-base md:text-lg font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-dark'}`}>
                                   <Phone className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                                   {sub.phone || 'Nincs megadva'}
                                 </p>
                               </div>
                               <div>
-                                <p className="text-[10px] md:text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Email cím</p>
-                                <p className="text-base md:text-lg font-bold text-dark flex items-center gap-2 break-all">
+                                <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest mb-1 ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Email cím</p>
+                                <p className={`text-base md:text-lg font-bold flex items-center gap-2 break-all ${darkMode ? 'text-white' : 'text-dark'}`}>
                                   <Mail className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                                   {sub.email}
                                 </p>
@@ -480,8 +495,8 @@ export default function Admin() {
                             </div>
                           </div>
                           <div>
-                            <p className="text-[10px] md:text-xs font-bold text-dark/40 uppercase tracking-widest mb-2">Üzenet</p>
-                            <div className="p-4 md:p-6 bg-white rounded-2xl border border-black/5 text-dark leading-relaxed text-sm md:text-base">
+                            <p className={`text-[10px] md:text-xs font-bold uppercase tracking-widest mb-2 ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Üzenet</p>
+                            <div className={`p-4 md:p-6 rounded-2xl border leading-relaxed text-sm md:text-base ${darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-black/5 text-dark'}`}>
                               {sub.message}
                             </div>
                           </div>
@@ -495,18 +510,38 @@ export default function Admin() {
           </>
         ) : activeTab === 'settings' ? (
           <div className="space-y-6 md:space-y-8">
-            <div className="bg-white rounded-[32px] md:rounded-[40px] border border-black/5 shadow-xl p-6 md:p-10">
-              <h2 className="text-xl md:text-2xl font-bold text-dark mb-6 md:mb-8 flex items-center gap-2">
+            <div className={`rounded-[32px] md:rounded-[40px] border shadow-xl p-6 md:p-10 ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
+              <h2 className={`text-xl md:text-2xl font-bold mb-6 md:mb-8 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-dark'}`}>
                 <Settings className="text-primary w-5 h-5 md:w-6 md:h-6" />
                 Máltai Oldal Beállításai
               </h2>
 
               <div className="space-y-6 md:space-y-8">
-                {/* TikTok Toggle */}
-                <div className="flex items-center justify-between p-4 md:p-6 bg-light rounded-2xl md:rounded-3xl border border-black/5">
+                {/* Dark Mode Toggle */}
+                <div className={`flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border ${darkMode ? 'bg-white/5 border-white/10' : 'bg-light border-black/5'}`}>
                   <div className="pr-4">
-                    <h3 className="font-bold text-dark text-base md:text-lg">TikTok Szekció</h3>
-                    <p className="text-dark/60 text-xs md:text-sm">Kapcsolja be vagy ki a TikTok videókat a máltai oldalon.</p>
+                    <h3 className={`font-bold text-base md:text-lg ${darkMode ? 'text-white' : 'text-dark'}`}>Sötét Mód</h3>
+                    <p className={darkMode ? 'text-white/60 text-xs md:text-sm' : 'text-dark/60 text-xs md:text-sm'}>Kapcsolja be a sötét témát az admin felületen.</p>
+                  </div>
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className={`relative inline-flex h-7 w-12 md:h-8 md:w-14 items-center rounded-full transition-colors focus:outline-none shrink-0 ${
+                      darkMode ? 'bg-primary' : 'bg-dark/20'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-5 w-5 md:h-6 md:w-6 transform rounded-full bg-white transition-transform ${
+                        darkMode ? 'translate-x-6 md:translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* TikTok Toggle */}
+                <div className={`flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border ${darkMode ? 'bg-white/5 border-white/10' : 'bg-light border-black/5'}`}>
+                  <div className="pr-4">
+                    <h3 className={`font-bold text-base md:text-lg ${darkMode ? 'text-white' : 'text-dark'}`}>TikTok Szekció</h3>
+                    <p className={darkMode ? 'text-white/60 text-xs md:text-sm' : 'text-dark/60 text-xs md:text-sm'}>Kapcsolja be vagy ki a TikTok videókat a máltai oldalon.</p>
                   </div>
                   <button
                     onClick={() => setSettings({ ...settings, maltaTiktokEnabled: !settings.maltaTiktokEnabled })}
@@ -524,7 +559,7 @@ export default function Admin() {
 
                 {/* TikTok URLs */}
                 <div className="space-y-4">
-                  <h3 className="font-bold text-dark text-base md:text-lg px-2">TikTok Videó Linkek</h3>
+                  <h3 className={`font-bold text-base md:text-lg px-2 ${darkMode ? 'text-white' : 'text-dark'}`}>TikTok Videó Linkek</h3>
                   <div className="grid gap-3 md:gap-4">
                     {settings.maltaTiktokUrls.map((url, index) => (
                       <div key={index} className="relative">
@@ -536,7 +571,7 @@ export default function Admin() {
                           value={url}
                           onChange={(e) => handleTiktokUrlChange(index, e.target.value)}
                           placeholder="https://vm.tiktok.com/..."
-                          className="w-full bg-light border border-black/5 rounded-xl md:rounded-2xl py-3 md:py-4 pl-10 md:pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-dark text-sm md:text-base"
+                          className={`w-full border rounded-xl md:rounded-2xl py-3 md:py-4 pl-10 md:pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-sm md:text-base ${darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-light border-black/5 text-dark'}`}
                         />
                       </div>
                     ))}
@@ -557,21 +592,21 @@ export default function Admin() {
           </div>
         ) : (
           <div className="space-y-6 md:space-y-8">
-            <div className="bg-white rounded-[32px] md:rounded-[40px] border border-black/5 shadow-xl p-6 md:p-10">
-              <h2 className="text-xl md:text-2xl font-bold text-dark mb-6 flex items-center gap-2">
+            <div className={`rounded-[32px] md:rounded-[40px] border shadow-xl p-6 md:p-10 ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
+              <h2 className={`text-xl md:text-2xl font-bold mb-6 flex items-center gap-2 ${darkMode ? 'text-white' : 'text-dark'}`}>
                 <Plus className="text-primary w-5 h-5 md:w-6 md:h-6" />
                 Új Admin Hozzáadása
               </h2>
               <form onSubmit={handleAddAdmin} className="flex flex-col md:flex-row gap-3 md:gap-4">
                 <div className="flex-1 relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark/20" />
+                  <Mail className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-white/20' : 'text-dark/20'}`} />
                   <input
                     required
                     type="email"
                     value={newAdminEmail}
                     onChange={(e) => setNewAdminEmail(e.target.value)}
                     placeholder="pelda@gmail.com"
-                    className="w-full bg-light border border-black/5 rounded-xl md:rounded-2xl py-3.5 md:py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-dark text-sm md:text-base"
+                    className={`w-full border rounded-xl md:rounded-2xl py-3.5 md:py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-sm md:text-base ${darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-light border-black/5 text-dark'}`}
                   />
                 </div>
                 <button
@@ -585,16 +620,16 @@ export default function Admin() {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-lg md:text-xl font-bold text-dark mb-4 px-2">Adminisztrátorok Listája</h2>
+              <h2 className={`text-lg md:text-xl font-bold mb-4 px-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Adminisztrátorok Listája</h2>
               
               {/* Hardcoded main admin */}
-              <div className="bg-white rounded-2xl md:rounded-3xl border border-black/5 shadow-sm p-4 md:p-6 flex items-center justify-between">
+              <div className={`rounded-2xl md:rounded-3xl border shadow-sm p-4 md:p-6 flex items-center justify-between ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
                 <div className="flex items-center gap-3 md:gap-4 min-w-0">
                   <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">
                     <User className="text-primary w-5 h-5 md:w-6 md:h-6" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-bold text-dark text-sm md:text-base truncate">barni.kroner@gmail.com</h3>
+                    <h3 className={`font-bold text-sm md:text-base truncate ${darkMode ? 'text-white' : 'text-dark'}`}>barni.kroner@gmail.com</h3>
                     <p className="text-[10px] text-primary font-bold uppercase tracking-widest">Fő Adminisztrátor</p>
                   </div>
                 </div>
@@ -604,15 +639,15 @@ export default function Admin() {
                 admin.email !== 'barni.kroner@gmail.com' && (
                   <div
                     key={admin.id}
-                    className="bg-white rounded-2xl md:rounded-3xl border border-black/5 shadow-sm p-4 md:p-6 flex items-center justify-between"
+                    className={`rounded-2xl md:rounded-3xl border shadow-sm p-4 md:p-6 flex items-center justify-between ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}
                   >
                     <div className="flex items-center gap-3 md:gap-4 min-w-0">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-light rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">
-                        <User className="text-dark/20 w-5 h-5 md:w-6 md:h-6" />
+                      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 ${darkMode ? 'bg-white/5' : 'bg-light'}`}>
+                        <User className={`w-5 h-5 md:w-6 md:h-6 ${darkMode ? 'text-white/20' : 'text-dark/20'}`} />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="font-bold text-dark text-sm md:text-base truncate">{admin.email}</h3>
-                        <p className="text-[10px] text-dark/40 flex items-center gap-1">
+                        <h3 className={`font-bold text-sm md:text-base truncate ${darkMode ? 'text-white' : 'text-dark'}`}>{admin.email}</h3>
+                        <p className={`text-[10px] flex items-center gap-1 ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>
                           <Calendar className="w-3 h-3" /> 
                           Hozzáadva: {admin.addedAt?.toDate().toLocaleDateString('hu-HU')}
                         </p>
@@ -639,19 +674,19 @@ export default function Admin() {
             onClick={() => setDeleteConfirm(null)}
             className="absolute inset-0 bg-dark/60 backdrop-blur-sm"
           />
-          <div className="relative w-full max-w-md bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-8 shadow-2xl">
+          <div className={`relative w-full max-w-md rounded-[24px] md:rounded-[32px] p-6 md:p-8 shadow-2xl ${darkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white'}`}>
             <div className="w-12 h-12 md:w-16 md:h-16 bg-red-50 rounded-xl md:rounded-2xl flex items-center justify-center mb-6">
               <Trash2 className="w-6 h-6 md:w-8 md:h-8 text-red-600" />
             </div>
-            <h3 className="text-xl md:text-2xl font-bold text-dark mb-2">Biztos benne?</h3>
-            <p className="text-dark/60 mb-8 text-sm md:text-base">
-              Biztosan törölni szeretné <span className="font-bold text-dark">{deleteConfirm.label}</span>? 
+            <h3 className={`text-xl md:text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Biztos benne?</h3>
+            <p className={`mb-8 text-sm md:text-base ${darkMode ? 'text-white/60' : 'text-dark/60'}`}>
+              Biztosan törölni szeretné <span className={`font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>{deleteConfirm.label}</span>? 
               Ez a művelet nem vonható vissza.
             </p>
             <div className="flex gap-3 md:gap-4">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 px-4 md:px-6 py-3.5 md:py-4 rounded-xl md:rounded-2xl bg-light text-dark font-bold hover:bg-dark/5 transition-colors text-sm md:text-base"
+                className={`flex-1 px-4 md:px-6 py-3.5 md:py-4 rounded-xl md:rounded-2xl font-bold transition-colors text-sm md:text-base ${darkMode ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-light text-dark hover:bg-dark/5'}`}
               >
                 Mégse
               </button>
