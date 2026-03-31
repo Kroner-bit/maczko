@@ -68,12 +68,64 @@
         }
       },
       "required": ["addedBy", "addedAt"]
+    },
+    "MaltaSubmission": {
+      "title": "Malta Contact Submission",
+      "description": "A submission from the Malta contact form.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the person submitting the form."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The email address of the person."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone number of the person."
+        },
+        "message": {
+          "type": "string",
+          "description": "The message they sent."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time the submission was created."
+        }
+      },
+      "required": ["name", "email", "message", "createdAt"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Application settings.",
+      "type": "object",
+      "properties": {
+        "maltaTiktokEnabled": {
+          "type": "boolean",
+          "description": "Whether the Malta TikTok section is enabled."
+        },
+        "maltaTiktokUrls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The URLs of the TikTok videos for the Malta page."
+        }
+      }
     }
   },
   "firestore": {
     "/submissions/{submissionId}": {
       "schema": "ContactSubmission",
       "description": "Collection of contact form submissions."
+    },
+    "/malta_submissions/{submissionId}": {
+      "schema": "MaltaSubmission",
+      "description": "Collection of Malta contact form submissions."
     },
     "/users/{userId}": {
       "schema": "User",
@@ -82,6 +134,10 @@
     "/admins/{email}": {
       "schema": "AdminEmail",
       "description": "Collection of emails authorized as admins."
+    },
+    "/settings/{settingId}": {
+      "schema": "Settings",
+      "description": "Collection of application settings."
     }
   }
 }

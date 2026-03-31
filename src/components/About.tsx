@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Target, Users, Heart, Lightbulb } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 
@@ -16,12 +15,7 @@ export default function About() {
     <section id="about" className="py-24 bg-light relative overflow-hidden scroll-mt-32">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
+          <div>
             <div className="inline-block px-4 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary uppercase tracking-widest mb-6">
               {t.about.badge}
             </div>
@@ -47,24 +41,20 @@ export default function About() {
                 <p className="text-sm text-dark/40 uppercase tracking-widest font-bold">{t.about.stat2}</p>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {values.map((value, index) => (
-              <motion.div
+            {values.map((value) => (
+              <div
                 key={value.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="p-8 rounded-3xl glass hover:bg-white transition-all hover:shadow-lg"
+                className="p-8 rounded-3xl glass bg-white shadow-sm"
               >
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
                   <value.icon className="text-primary w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-dark">{value.title}</h3>
                 <p className="text-sm text-dark/50 leading-relaxed">{value.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

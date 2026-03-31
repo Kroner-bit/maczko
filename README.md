@@ -1,16 +1,16 @@
-# Maczkó Tetőfedés & Bádogozás - Weboldal és Admin Felület
+# Maczkó Tetőfedés & Máltai Kőmunkák - Weboldal és Admin Felület
 
-Ez a projekt a **Maczkó Tetőfedés** hivatalos, modern és reszponzív bemutatkozó weboldala, kiegészítve egy teljes körű adminisztrációs felülettel az ügyfélmegkeresések kezelésére.
+Ez a projekt a **Maczkó Tetőfedés** hivatalos, modern és reszponzív bemutatkozó weboldala, kiegészítve egy máltai kőmunkákra szakosodott aloldallal és egy teljes körű adminisztrációs felülettel.
 
 ## 🏠 Projekt Áttekintés
 
-A weboldal egy Single Page Application (SPA), amely letisztult esztétikával, finom animációkkal, kétnyelvű támogatással és egy biztonságos adminisztrációs panellel rendelkezik.
+A weboldal egy Single Page Application (SPA), amely letisztult esztétikával, kétnyelvű támogatással és egy biztonságos adminisztrációs panellel rendelkezik.
 
 ### Főbb Funkciók
 
 - **Kétnyelvűség (HU/EN):** Teljes körű fordítási rendszer a `LanguageContext` segítségével.
-- **Modern UI/UX:** Egyedi Tailwind CSS téma, Space Grotesk és Inter betűtípusokkal.
-- **Interaktív Elemek:** Animált szekciók és kártyák a `motion` (motion/react) könyvtárral.
+- **Máltai Szolgáltatások:** Különálló angol nyelvű aloldal a máltai mészkő-restaurálási és karbantartási munkákhoz.
+- **Modern UI/UX:** Letisztult Tailwind CSS téma, Space Grotesk és Inter betűtípusokkal.
 - **Kapcsolati űrlap:** Valós idejű adatmentés Firebase Firestore-ba.
 - **Adminisztrációs Felület:** 
     - Biztonságos belépés Google fiókkal.
@@ -25,7 +25,6 @@ A weboldal egy Single Page Application (SPA), amely letisztult esztétikával, f
 - **Build Tool:** Vite
 - **Backend/Adatbázis:** Firebase (Firestore, Authentication)
 - **Stílus:** Tailwind CSS 4
-- **Animációk:** Motion (motion/react)
 - **Ikonok:** Lucide React
 - **Routing:** React Router DOM (v7)
 

@@ -1,29 +1,40 @@
 import React from 'react';
 import { Facebook, Instagram } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function Footer() {
   const { t } = useLanguage();
+  const location = useLocation();
+  const isMaltaPage = location.pathname === '/malta-services';
+  const logoSrc = isMaltaPage ? "https://kephost.net/p/MjM0NDc3MA.png" : "https://kephost.net/p/MjM0NDAxMg.png";
+  const homePath = isMaltaPage ? "/malta-services" : "/";
+  const isHomeLikePage = location.pathname === '/' || location.pathname === '/malta-services';
 
   return (
     <footer className="py-12 border-t border-black/5 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-3">
+          <Link to={homePath} className="flex items-center gap-3">
             <img 
-              src="https://kephost.net/p/MjM0NDAxMg.png" 
-              alt="Maczkó Tetőfedés Logo" 
+              src={logoSrc} 
+              alt={`${t.brand.first} ${t.brand.second} Logo`} 
               className="h-10 w-auto" 
               referrerPolicy="no-referrer" 
             />
             <span className="text-lg font-display font-bold tracking-tight text-dark">
-              Maczkó <span className="text-primary">Tetőfedés</span>
+              {t.brand.first} <span className="text-primary">{t.brand.second}</span>
             </span>
-          </div>
+          </Link>
 
-          <p className="text-sm text-dark/40">
-            © 2026 Maczkó Tetőfedés. {t.footer.rights}
-          </p>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-sm text-dark/40">
+              © 2026 {t.brand.first} {t.brand.second}. {t.footer.rights}
+            </p>
+            <Link to="/malta-services" className="text-xs font-bold text-primary hover:text-dark transition-colors uppercase tracking-widest">
+              {t.nav.malta}
+            </Link>
+          </div>
 
           <div className="flex gap-6">
             <a href="#" className="text-dark/40 hover:text-primary transition-colors">

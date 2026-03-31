@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, MessageSquare, User, AtSign, PhoneCall, CheckCircle2, Loader2 } from 'lucide-react';
-import { useLanguage } from '../LanguageContext';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 
-export default function Contact() {
-  const { t } = useLanguage();
+export default function MaltaContact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +21,7 @@ export default function Contact() {
 
     try {
       setError(null);
-      await addDoc(collection(db, 'submissions'), {
+      await addDoc(collection(db, 'malta_submissions'), {
         ...formData,
         createdAt: serverTimestamp()
       });
@@ -31,8 +29,8 @@ export default function Contact() {
       setFormData({ name: '', email: '', phone: '', message: '' });
       setTimeout(() => setIsSuccess(false), 5000);
     } catch (err: any) {
-      handleFirestoreError(err, OperationType.CREATE, 'submissions');
-      setError('Hiba történt az üzenet küldésekor. Kérjük, próbálja újra később!');
+      handleFirestoreError(err, OperationType.CREATE, 'malta_submissions');
+      setError('An error occurred while sending the message. Please try again later!');
     } finally {
       setIsSubmitting(false);
     }
@@ -48,15 +46,13 @@ export default function Contact() {
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           <div>
             <div className="inline-block px-4 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary uppercase tracking-widest mb-6">
-              {t.contact.badge}
+              Contact
             </div>
             <h2 className="text-4xl md:text-6xl font-display font-bold mb-8 text-dark">
-              {t.contact.title.split('{gradient}')[0]}
-              <span className="text-gradient">{t.contact.gradient}</span>
-              {t.contact.title.split('{gradient}')[1]}
+              Get a <span className="text-gradient">Free</span> Quote!
             </h2>
             <p className="text-lg text-dark/60 mb-12 leading-relaxed">
-              {t.contact.desc}
+              We are ready to help with your property restoration or maintenance. Contact us today!
             </p>
 
             <div className="space-y-8">
@@ -65,8 +61,8 @@ export default function Contact() {
                   <Phone className="text-primary group-hover:text-white w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">{t.contact.form.phone}</p>
-                  <p className="text-xl font-bold text-dark">+36 30 123 4567</p>
+                  <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Phone Number</p>
+                  <p className="text-xl font-bold text-dark">+356 7700 0000</p>
                 </div>
               </div>
               <div className="flex items-center gap-6 group">
@@ -74,8 +70,8 @@ export default function Contact() {
                   <Mail className="text-primary group-hover:text-white w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">{t.contact.form.email}</p>
-                  <p className="text-xl font-bold text-dark">info@maczkotetofedes.hu</p>
+                  <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Email Address</p>
+                  <p className="text-xl font-bold text-dark">malta@maczkoridging.com</p>
                 </div>
               </div>
               <div className="flex items-center gap-6 group">
@@ -83,8 +79,8 @@ export default function Contact() {
                   <MapPin className="text-primary group-hover:text-white w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Székhely</p>
-                  <p className="text-xl font-bold text-dark">1121 Budapest, Hegyhát út 12.</p>
+                  <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Location</p>
+                  <p className="text-xl font-bold text-dark">Malta, Sliema</p>
                 </div>
               </div>
             </div>
@@ -96,14 +92,14 @@ export default function Contact() {
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
                   <CheckCircle2 className="w-10 h-10 text-green-600" />
                 </div>
-                <h3 className="text-2xl font-bold text-dark mb-2">Köszönjük!</h3>
-                <p className="text-dark/60">Üzenetét sikeresen elküldtük. Hamarosan felvesszük Önnel a kapcsolatot.</p>
+                <h3 className="text-2xl font-bold text-dark mb-2">Thank you!</h3>
+                <p className="text-dark/60">Your message has been sent successfully. We will contact you soon.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">{t.contact.form.name}</label>
+                    <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">Name</label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark/20" />
                       <input
@@ -112,13 +108,13 @@ export default function Contact() {
                         value={formData.name}
                         onChange={handleChange}
                         type="text"
-                        placeholder="Kovács János"
+                        placeholder="John Doe"
                         className="w-full bg-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-dark"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">{t.contact.form.email}</label>
+                    <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">Email Address</label>
                     <div className="relative">
                       <AtSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark/20" />
                       <input
@@ -127,7 +123,7 @@ export default function Contact() {
                         value={formData.email}
                         onChange={handleChange}
                         type="email"
-                        placeholder="janos@pelda.hu"
+                        placeholder="john@example.com"
                         className="w-full bg-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-dark"
                       />
                     </div>
@@ -135,7 +131,7 @@ export default function Contact() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">{t.contact.form.phone}</label>
+                  <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">Phone Number</label>
                   <div className="relative">
                     <PhoneCall className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark/20" />
                     <input
@@ -143,14 +139,14 @@ export default function Contact() {
                       value={formData.phone}
                       onChange={handleChange}
                       type="tel"
-                      placeholder="+36 30 000 0000"
+                      placeholder="+356 0000 0000"
                       className="w-full bg-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-dark"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">{t.contact.form.message}</label>
+                  <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">Message</label>
                   <div className="relative">
                     <MessageSquare className="absolute left-4 top-6 w-5 h-5 text-dark/20" />
                     <textarea
@@ -159,7 +155,7 @@ export default function Contact() {
                       value={formData.message}
                       onChange={handleChange}
                       rows={4}
-                      placeholder="Miben segíthetünk?"
+                      placeholder="How can we help you?"
                       className="w-full bg-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors resize-none text-dark"
                     />
                   </div>
@@ -181,7 +177,7 @@ export default function Contact() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      {t.contact.form.submit}
+                      Send Message
                       <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                     </>
                   )}

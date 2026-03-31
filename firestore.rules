@@ -69,6 +69,15 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    match /malta_submissions/{submissionId} {
+      // Anyone can submit a contact form
+      allow create: if isValidSubmission(request.resource.data);
+      // Only admins can read or delete submissions
+      allow read, delete: if isAdmin();
+      // No updates allowed to submissions
+      allow update: if false;
+    }
+
     match /admins/{email} {
       // Only admins can manage the admin list
       // Prevent deletion of the main admin document if it exists
@@ -80,6 +89,13 @@ service cloud.firestore {
       // Users can read their own profile
       allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
       // Only admins can manage users
+      allow write: if isAdmin();
+    }
+
+    match /settings/{settingId} {
+      // Anyone can read settings
+      allow read: if true;
+      // Only admins can write settings
       allow write: if isAdmin();
     }
   }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
 import { Lock, Mail, Loader2, AlertCircle, LogIn } from 'lucide-react';
 import { auth, db } from '../firebase';
 import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
@@ -17,13 +16,12 @@ export default function Login() {
         // Check if user is admin
         try {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
-          const userEmail = user.email?.toLowerCase().trim();
-          const adminDoc = userEmail ? await getDoc(doc(db, 'admins', userEmail)) : null;
+          const adminDoc = user.email ? await getDoc(doc(db, 'admins', user.email)) : null;
           
           const isAdmin = 
             (userDoc.exists() && userDoc.data().role === 'admin') || 
             (adminDoc && adminDoc.exists()) || 
-            userEmail === 'barni.kroner@gmail.com';
+            user.email === 'barni.kroner@gmail.com';
           
           if (isAdmin) {
             sessionStorage.setItem('isAdmin', 'true');
@@ -57,11 +55,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-light flex items-center justify-center px-6 py-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white rounded-[40px] shadow-xl p-10 border border-black/5"
-      >
+      <div className="max-w-md w-full bg-white rounded-[40px] shadow-xl p-10 border border-black/5">
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Lock className="text-primary w-8 h-8" />
@@ -97,7 +91,7 @@ export default function Login() {
             Csak az engedélyezett adminisztrátorok léphetnek be.
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

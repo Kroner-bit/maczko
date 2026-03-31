@@ -8,6 +8,12 @@ export const translations = {
       about: 'Rólunk',
       portfolio: 'Referenciák',
       contact: 'Kapcsolat',
+      malta: 'Máltai Szolgáltatások',
+      backToHu: 'Vissza a magyar oldalra',
+    },
+    brand: {
+      first: 'Maczkó',
+      second: 'Tetőfedés'
     },
     hero: {
       title: 'A Tető {gradient} Felett.',
@@ -15,6 +21,7 @@ export const translations = {
       description: 'Maczkó Tetőfedés: Ahol a tradicionális szakértelem találkozik a modern technológiával. Tartós, esztétikus és értékálló megoldások az Ön otthonára.',
       ctaPrimary: 'Ingyenes Felmérés',
       ctaSecondary: 'Referenciáink',
+      ctaMalta: 'Máltai Szolgáltatások',
       badge1: 'Garanciális Munka',
       badge2: 'Mestervizsgás Szakemberek',
       projectLabel: 'Legutóbbi Projekt',
@@ -120,6 +127,12 @@ export const translations = {
       about: 'About Us',
       portfolio: 'Portfolio',
       contact: 'Contact',
+      malta: 'Malta Services',
+      backToHu: 'Back to Hungarian',
+    },
+    brand: {
+      first: 'Maczkó',
+      second: 'Roofing'
     },
     hero: {
       title: 'The Roof Above {gradient}.',
@@ -127,6 +140,7 @@ export const translations = {
       description: 'Maczkó Roofing: Where traditional expertise meets modern technology. Durable, aesthetic, and valuable solutions for your home.',
       ctaPrimary: 'Free Assessment',
       ctaSecondary: 'Our Portfolio',
+      ctaMalta: 'Malta Services',
       badge1: 'Guaranteed Work',
       badge2: 'Master Craftsmen',
       projectLabel: 'Latest Project',

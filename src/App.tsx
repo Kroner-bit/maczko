@@ -9,6 +9,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import Login from './components/Login';
 import Admin from './components/Admin';
+import MaltaServices from './components/MaltaServices';
 import { LanguageProvider } from './LanguageContext';
 
 function HomePage() {
@@ -34,6 +35,7 @@ export default function App() {
         <div className="min-h-screen bg-light text-dark selection:bg-primary selection:text-white">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/malta-services" element={<MaltaServices />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<Navigate to="/" replace />} />
