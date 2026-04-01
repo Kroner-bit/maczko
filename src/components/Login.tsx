@@ -54,14 +54,20 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-light flex items-center justify-center px-6 py-12">
-      <div className="max-w-md w-full bg-white rounded-[40px] shadow-xl p-10 border border-black/5">
+    <div className="min-h-screen bg-white flex items-center justify-center px-6 py-12">
+      <div className="max-w-md w-full bg-white rounded-[40px] shadow-2xl p-10 border border-black/10">
         <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <Lock className="text-primary w-8 h-8" />
+          <img 
+            src="https://kephost.net/p/MjM0NTg1NQ.png" 
+            alt="Logo" 
+            className="h-16 md:h-20 w-auto mx-auto mb-8" 
+            referrerPolicy="no-referrer"
+          />
+          <div className="w-16 h-16 bg-black/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Lock className="text-black w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-display font-bold text-dark mb-2">Admin Belépés</h1>
-          <p className="text-dark/60">Kérjük, jelentkezzen be Google fiókjával az üzenetek megtekintéséhez.</p>
+          <h1 className="text-3xl font-display font-bold text-black mb-2">Admin Belépés</h1>
+          <p className="text-black/60">Kérjük, jelentkezzen be Google fiókjával az üzenetek megtekintéséhez.</p>
         </div>
 
         <div className="space-y-6">
@@ -75,19 +81,19 @@ export default function Login() {
           <button
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full py-5 rounded-2xl bg-white border border-black/10 text-dark font-bold flex items-center justify-center gap-3 hover:bg-light transition-all group shadow-sm disabled:opacity-70"
+            className="w-full py-5 rounded-2xl bg-white border border-black/20 text-black font-bold flex items-center justify-center gap-3 hover:bg-black/5 transition-all group shadow-sm disabled:opacity-70"
           >
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
-                <LogIn className="w-5 h-5 text-primary" />
+                <LogIn className="w-5 h-5 text-black" />
                 Bejelentkezés Google-lel
               </>
             )}
           </button>
           
-          <p className="text-center text-xs text-dark/40">
+          <p className="text-center text-xs text-black/40">
             Csak az engedélyezett adminisztrátorok léphetnek be.
           </p>
         </div>

@@ -11,7 +11,7 @@ export default function Navbar() {
   const location = useLocation();
   const isSubPage = location.pathname !== '/';
   const isMaltaPage = location.pathname === '/malta-services';
-  const logoSrc = isMaltaPage ? "https://kephost.net/p/MjM0NDc3MA.png" : "https://kephost.net/p/MjM0NDAxMg.png";
+  const logoSrc = "https://kephost.net/p/MjM0NTg1NQ.png";
   const homePath = isMaltaPage ? "/malta-services" : "/";
   const isHomeLikePage = location.pathname === '/' || location.pathname === '/malta-services';
 
@@ -61,7 +61,7 @@ export default function Navbar() {
             )}
             referrerPolicy="no-referrer" 
           />
-          <span className="text-xl font-display font-bold tracking-tight text-dark">
+          <span className="hidden md:block text-2xl md:text-3xl font-display font-bold tracking-tight text-dark">
             {t.brand.first} <span className="text-primary">{t.brand.second}</span>
           </span>
         </Link>

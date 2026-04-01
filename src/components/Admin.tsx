@@ -306,8 +306,14 @@ export default function Admin() {
 
   if (isAuthChecking || isLoading) {
     return (
-      <div className="min-h-screen bg-light flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+      <div className={`min-h-screen flex flex-col items-center justify-center gap-6 ${darkMode ? 'bg-[#121212]' : 'bg-light'}`}>
+        <img 
+          src="https://kephost.net/p/MjM0NTg1NQ.png" 
+          alt="Logo" 
+          className="h-16 md:h-24 w-auto animate-pulse" 
+          referrerPolicy="no-referrer"
+        />
+        <Loader2 className={`w-10 h-10 animate-spin ${darkMode ? 'text-white' : 'text-dark'}`} />
       </div>
     );
   }
