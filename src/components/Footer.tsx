@@ -7,7 +7,7 @@ export default function Footer() {
   const { t } = useLanguage();
   const location = useLocation();
   const isMaltaPage = location.pathname === '/malta-services';
-  const logoSrc = "https://kephost.net/p/MjM0NTg1NQ.png";
+  const logoSrc = "https://kephost.net/p/MjM2NTE3MA.png";
   const homePath = isMaltaPage ? "/malta-services" : "/";
   const isHomeLikePage = location.pathname === '/' || location.pathname === '/malta-services';
 

@@ -4,8 +4,8 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
-  --color-primary: #33887D;
-  --color-secondary: #98C19F;
+  --color-primary: #126b31;
+  --color-secondary: #126b31;
   --color-dark: #1A3A36;
   --color-black: #0D1F1D;
   --color-light: #FFFFFF;
@@ -28,11 +28,11 @@
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  @apply text-primary;
 }
 
 .bg-gradient-custom {
-  @apply bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent;
+  @apply bg-primary/10;
 }
 
 @keyframes float {

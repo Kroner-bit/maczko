@@ -18,7 +18,7 @@ export const translations = {
     hero: {
       title: 'A Tető {gradient} Felett.',
       gradient: 'Mindenek',
-      description: 'Maczkó Tetőfedés: Ahol a tradicionális szakértelem találkozik a modern technológiával. Tartós, esztétikus és értékálló megoldások az Ön otthonára.',
+      description: 'Maczkó Zsolt vagyok. Tisztelem és szeretem a szakmámat, ahol a tradicionális tudás a modern technológiával találkozik. Tartós, esztétikus és értékálló megoldásokat kínálok az Ön otthonára.',
       ctaPrimary: 'Ingyenes Felmérés',
       ctaSecondary: 'Referenciáink',
       ctaMalta: 'Máltai Szolgáltatások',
@@ -35,28 +35,56 @@ export const translations = {
       description: 'Minden, ami a tetővel kapcsolatos: a tervezéstől a kivitelezésen át a karbantartásig. Szakértő csapatunk minden kihívásra felkészült.',
       items: [
         {
-          title: 'Zsindelytetők',
-          description: 'Kivitelezés és javítás kiváló minőségű zsindelyekkel, tartós és esztétikus végeredménnyel.',
+          title: 'Teljes tetők készítése',
+          description: 'Új tetőszerkezetek teljes körű kivitelezése a tervezéstől az utolsó cserépig.',
         },
         {
-          title: 'Lapos Tetők',
-          description: 'Szigetelés nehézlemezzel, beázásmentes technológiával és hosszú élettartammal.',
+          title: 'Vihar utáni károk helyreállítása',
+          description: 'Gyors és szakszerű segítség viharkárok esetén, tetőfedés és szerkezeti javítás.',
         },
         {
-          title: 'Tetőmosás & Gallyazás',
-          description: 'Tetőtisztítás és veszélyes fák kivágása alpintechnikával, a biztonságos környezetért.',
+          title: 'Lapos tetők szigetelése',
+          description: 'Tartós és beázásmentes szigetelési megoldások modern technológiával, nehézlemezzel.',
         },
         {
-          title: 'Kémény Felújítás',
-          description: 'Teljes körű kéményrekonstrukció, bádogozás és szerkezeti megerősítés.',
+          title: 'Beázások megszüntetése',
+          description: 'A hibaforrás pontos felderítése és a beázás végleges elhárítása.',
         },
         {
-          title: 'Ereszcsatorna',
-          description: 'Rejtett és normál csatornák felrakása, javítása és szakszerű tisztítása.',
+          title: 'Kémények felújítása',
+          description: 'Kéményfejek átépítése, bádogozása és szerkezeti megerősítése.',
         },
         {
-          title: 'Szerkezeti Munkák',
-          description: 'Szarufák megerősítése, cseréje és régi tetők teljes körű helyreállítása.',
+          title: 'Régi tetők helyreállítása',
+          description: 'Műemlék jellegű vagy elöregedett tetők szakszerű rekonstrukciója.',
+        },
+        {
+          title: 'Bádogos munkák',
+          description: 'Ereszcsatornák, szegélyek és egyedi bádogos szerkezetek készítése.',
+        },
+        {
+          title: 'Kerítések építése és felújítása',
+          description: 'Esztétikus és tartós kerítésmegoldások építése és karbantartása.',
+        },
+        {
+          title: 'Széldeszka és ereszalj javítása',
+          description: 'Szakszerű felújítás és festés, faanyagvédelem.',
+        },
+        {
+          title: 'Alpintechnikai munkák',
+          description: 'Nehezen elérhető részek javítása, festése társasházakban is.',
+        },
+        {
+          title: 'Zsindelytetők kivitelezése',
+          description: 'Bitumenes zsindelyfedések szakszerű felrakása és karbantartása.',
+        },
+        {
+          title: 'Fa- és fémszerkezetek építése',
+          description: 'Kocsibeállók, előtetők és nyitott teraszok készítése.',
+        },
+        {
+          title: 'Kerti tárolók és egyedi építmények',
+          description: 'Egyedi elképzelések megvalósítása az Ön igényei szerint.',
         },
       ],
       ctaTitle: 'Nem találja, amit keres?',
@@ -67,7 +95,7 @@ export const translations = {
       badge: 'Rólunk',
       title: 'A {gradient} Generációi.',
       gradient: 'Szakértelem',
-      desc1: 'A Maczkó Tetőfedés nem csupán egy vállalkozás, hanem egy elkötelezett csapat, amely évtizedes tapasztalattal és modern szemlélettel közelít minden tetőhöz. Hiszünk abban, hogy a tető az otthon koronája, és ennek megfelelően, a legnagyobb gondossággal kezelünk minden projektet.',
+      desc1: 'A Maczkó Tetőfedés nem csupán egy vállalkozás, hanem egy régóta együtt dolgozó, összeszokott csapat. Jól ismerjük egymást és a szakmát, így évtizedes tapasztalattal és modern szemlélettel közelítünk minden tetőhöz. Hiszünk abban, hogy a tető az otthon koronája, és ennek megfelelően a legnagyobb gondossággal kezelünk minden projektet.',
       desc2: 'Legyen szó egy apró javításról vagy egy teljes tetőcseréről, nálunk a minőség nem alku tárgya. Célunk, hogy ügyfeleink évtizedekig elégedettek legyenek munkánkkal, és biztonságban érezzék magukat otthonukban.',
       stat1: 'Év Tapasztalat',
       stat2: 'Kész Projekt',
@@ -77,8 +105,8 @@ export const translations = {
           description: 'Biztonságos és esztétikus otthonok teremtése kiváló tetőmegoldásokkal.',
         },
         {
-          title: 'Csapatunk',
-          description: 'Tapasztalt szakemberek, akik elkötelezettek a minőség és a precizitás mellett.',
+          title: 'Személyes Kivitelezés',
+          description: 'Kisebb munkákat személyesen, egyedül vagy egy segéddel végzek el, garantálva a maximális odafigyelést.',
         },
         {
           title: 'Értékeink',
@@ -137,7 +165,7 @@ export const translations = {
     hero: {
       title: 'The Roof Above {gradient}.',
       gradient: 'Everything',
-      description: 'Maczkó Roofing: Where traditional expertise meets modern technology. Durable, aesthetic, and valuable solutions for your home.',
+      description: 'I am Zsolt Maczkó. I respect and love my profession, where traditional knowledge meets modern technology. I offer durable, aesthetic, and value-preserving solutions for your home.',
       ctaPrimary: 'Free Assessment',
       ctaSecondary: 'Our Portfolio',
       ctaMalta: 'Malta Services',
@@ -154,28 +182,56 @@ export const translations = {
       description: 'Everything related to roofing: from design and construction to maintenance. Our expert team is prepared for every challenge.',
       items: [
         {
-          title: 'Shingle Roofs',
-          description: 'Construction and repair with high-quality shingles, for a durable and aesthetic result.',
+          title: 'Complete Roof Construction',
+          description: 'Full implementation of new roof structures from design to the last tile.',
         },
         {
-          title: 'Flat Roofs',
-          description: 'Insulation with heavy sheets, leak-proof technology, and long lifespan.',
+          title: 'Storm Damage Restoration',
+          description: 'Quick and professional help in case of storm damage, roofing, and structural repair.',
         },
         {
-          title: 'Roof Washing & Pruning',
-          description: 'Roof cleaning and removal of dangerous trees using alpine techniques, for a safe environment.',
+          title: 'Flat Roof Insulation',
+          description: 'Durable and leak-proof insulation solutions with modern technology.',
         },
         {
-          title: 'Chimney Renovation',
-          description: 'Full chimney reconstruction, flashing, and structural reinforcement.',
+          title: 'Leak Elimination',
+          description: 'Accurate detection of the source and permanent elimination of leaks.',
         },
         {
-          title: 'Guttering',
-          description: 'Installation, repair, and professional cleaning of hidden and standard gutters.',
+          title: 'Full Chimney Renovation',
+          description: 'Reconstruction, flashing, and structural reinforcement of chimney heads.',
         },
         {
-          title: 'Structural Works',
-          description: 'Reinforcement and replacement of rafters, and full restoration of old roofs.',
+          title: 'Old Roof Restoration',
+          description: 'Professional reconstruction of historical or aged roofs.',
+        },
+        {
+          title: 'All Tinsmith Works',
+          description: 'Construction of gutters, edges, and unique tinsmith structures.',
+        },
+        {
+          title: 'Fence Construction & Renovation',
+          description: 'Aesthetic and durable fence solutions according to your needs.',
+        },
+        {
+          title: 'Eaves & Fascia Board Repair',
+          description: 'Professional renovation and maintenance of eaves and fascia boards.',
+        },
+        {
+          title: 'Alpine Technique Works',
+          description: 'We handle hard-to-reach parts even in apartment buildings.',
+        },
+        {
+          title: 'Shingle Roof Construction',
+          description: 'Professional installation and maintenance of bituminous shingle coverings.',
+        },
+        {
+          title: 'Carports & Terraces',
+          description: 'Construction of unique wood and metal frame structures and terraces.',
+        },
+        {
+          title: 'Garden Sheds & Custom Structures',
+          description: 'Construction of sheds and custom structures according to your needs.',
         },
       ],
       ctaTitle: 'Can\'t find what you\'re looking for?',
@@ -186,7 +242,7 @@ export const translations = {
       badge: 'About Us',
       title: 'Generations of {gradient}.',
       gradient: 'Expertise',
-      desc1: 'Maczkó Roofing is not just a business, but a dedicated team approaching every roof with decades of experience and a modern perspective. We believe the roof is the crown of the home, and accordingly, we handle every project with the utmost care.',
+      desc1: 'Maczkó Roofing is not just a business, but a tight-knit team that has been working together for a long time. We know each other and the trade well, approaching every roof with decades of experience and a modern perspective. We believe the roof is the crown of the home, and accordingly, we handle every project with the utmost care.',
       desc2: 'Whether it\'s a small repair or a full roof replacement, quality is non-negotiable for us. Our goal is for our clients to be satisfied with our work for decades and feel safe in their homes.',
       stat1: 'Years of Experience',
       stat2: 'Completed Projects',
@@ -196,8 +252,8 @@ export const translations = {
           description: 'Creating safe and aesthetic homes with excellent roofing solutions.',
         },
         {
-          title: 'Our Team',
-          description: 'Experienced professionals committed to quality and precision.',
+          title: 'Personal Execution',
+          description: 'I personally handle smaller jobs alone or with a helper, ensuring maximum attention to detail.',
         },
         {
           title: 'Our Values',

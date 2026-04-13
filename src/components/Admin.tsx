@@ -308,7 +308,7 @@ export default function Admin() {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center gap-6 ${darkMode ? 'bg-[#121212]' : 'bg-light'}`}>
         <img 
-          src="https://kephost.net/p/MjM0NTg1NQ.png" 
+          src="https://kephost.net/p/MjM2NTE3MA.png" 
           alt="Logo" 
           className="h-16 md:h-24 w-auto animate-pulse" 
           referrerPolicy="no-referrer"

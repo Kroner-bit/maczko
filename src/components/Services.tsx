@@ -5,27 +5,22 @@ import {
   Wind, 
   Trees, 
   Home, 
-  Layers 
+  Layers,
+  Construction,
+  ShieldCheck,
+  Paintbrush,
+  Wrench,
+  Ruler
 } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 
 export default function Services() {
   const { t } = useLanguage();
 
-  const icons = [Layers, Droplets, Trees, Hammer, Wind, Home];
-  const colors = [
-    'from-cyan-400 to-blue-500',
-    'from-teal-400 to-emerald-500',
-    'from-green-400 to-teal-500',
-    'from-blue-400 to-indigo-500',
-    'from-sky-400 to-blue-600',
-    'from-cyan-500 to-teal-600',
-  ];
-
+  const icons = [Layers, Wind, Construction, Droplets, Hammer, Home, ShieldCheck, Paintbrush, Trees, Wrench, Ruler];
   const services = t.services.items.map((item, index) => ({
     ...item,
-    icon: icons[index],
-    color: colors[index],
+    icon: icons[index % icons.length],
   }));
 
   return (
@@ -45,35 +40,37 @@ export default function Services() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {services.map((service) => (
             <div
               key={service.title}
-              className="group relative p-8 rounded-3xl glass bg-white shadow-sm"
+              className="group relative p-6 md:p-8 rounded-3xl glass bg-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center gap-6 hover:shadow-md transition-all"
             >
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-6 shadow-lg`}>
-                <service.icon className="text-white w-7 h-7" />
+              <div className="w-16 h-16 shrink-0 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
+                <service.icon className="text-primary w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-dark">{service.title}</h3>
-              <p className="text-dark/50 leading-relaxed">
-                {service.description}
-              </p>
+              <div>
+                <h3 className="text-xl font-bold mb-2 text-dark">{service.title}</h3>
+                <p className="text-dark/60 leading-relaxed text-sm md:text-base">
+                  {service.description}
+                </p>
+              </div>
             </div>
           ))}
-        </div>
 
-        {/* Extra CTA in Services */}
-        <div className="mt-20 p-12 rounded-[40px] bg-gradient-to-r from-primary/5 to-secondary/5 border border-black/5 flex flex-col md:flex-row justify-between items-center gap-8 shadow-sm">
-          <div className="text-center md:text-left">
-            <h3 className="text-3xl font-bold mb-2 text-dark">{t.services.ctaTitle}</h3>
-            <p className="text-dark/60">{t.services.ctaDesc}</p>
+          {/* Extra CTA in Services as the last list item */}
+          <div className="md:col-span-2 p-6 md:p-8 rounded-3xl bg-primary/10 border border-primary/20 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm mt-2">
+            <div className="text-center md:text-left">
+              <h3 className="text-xl md:text-2xl font-bold mb-2 text-dark">{t.services.ctaTitle}</h3>
+              <p className="text-dark/60">{t.services.ctaDesc}</p>
+            </div>
+            <a
+              href="#contact"
+              className="px-8 py-4 rounded-full bg-primary text-white font-bold hover:bg-dark transition-colors whitespace-nowrap shrink-0"
+            >
+              {t.services.ctaButton}
+            </a>
           </div>
-          <a
-            href="#contact"
-            className="px-8 py-4 rounded-full bg-dark text-white font-bold hover:bg-primary transition-colors whitespace-nowrap"
-          >
-            {t.services.ctaButton}
-          </a>
         </div>
       </div>
     </section>

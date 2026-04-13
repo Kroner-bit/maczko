@@ -64,10 +64,10 @@ export default function MaltaServices() {
   }, [settings.maltaTiktokUrls]);
 
   const maltaTheme = {
-    '--color-primary': '#D99212',
-    '--color-secondary': '#443225',
+    '--color-primary': '#126b31',
+    '--color-secondary': '#126b31',
     '--color-dark': '#231A13',
-    '--color-accent': '#443225'
+    '--color-accent': '#126b31'
   } as React.CSSProperties;
 
   const services = [
@@ -75,35 +75,30 @@ export default function MaltaServices() {
       title: 'Limestone Wall Restoration',
       description: 'Professional facade cleaning (sandblasting/washing), precise re-pointing, and replacement of crumbling or damaged stones to restore structural integrity and aesthetics.',
       icon: Layers,
-      color: 'from-amber-400 to-orange-500',
       image: 'https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&q=80&w=800'
     },
     {
       title: 'Stone Fence Construction & Repair',
       description: 'Expert construction and restoration of traditional Maltese Boundary walls and Rubble walls (Hitan tas-Sejjieh), ensuring they stand the test of time.',
       icon: Construction,
-      color: 'from-stone-400 to-stone-600',
       image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=800'
     },
     {
       title: 'Structural Damage Repair',
       description: 'Post-storm emergency repairs, professional crack stitching, and static reinforcement to ensure your property remains safe and secure.',
       icon: ShieldAlert,
-      color: 'from-red-400 to-red-600',
       image: 'https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&q=80&w=800'
     },
     {
       title: 'Moisture & Damp Protection',
       description: 'Comprehensive waterproofing and damp-proofing treatments. We specialize in identifying and treating rising damp, a common challenge in Maltese properties.',
       icon: Droplets,
-      color: 'from-blue-400 to-cyan-500',
       image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=800'
     },
     {
       title: 'Stone Surface Treatment',
       description: 'Specialized impregnation treatments for interior and exterior limestone walls to prevent crumbling (porlás) and protect against environmental wear.',
       icon: Hammer,
-      color: 'from-indigo-400 to-blue-600',
       image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800'
     }
   ];
@@ -143,17 +138,17 @@ export default function MaltaServices() {
                   Local Maltese expertise with a focus on precision, cleanliness, and a full guarantee on all our stone restoration and maintenance services.
                 </p>
                 <div className="flex flex-wrap gap-4 justify-start">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-black/5 shadow-sm">
-                    <CheckCircle2 className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-bold text-dark/70">Precision</span>
+                  <div className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
+                    <CheckCircle2 className="w-6 h-6 text-primary" />
+                    <span className="text-sm font-bold text-dark">Precision</span>
                   </div>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-black/5 shadow-sm">
-                    <CheckCircle2 className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-bold text-dark/70">Cleanliness</span>
+                  <div className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
+                    <CheckCircle2 className="w-6 h-6 text-primary" />
+                    <span className="text-sm font-bold text-dark">Cleanliness</span>
                   </div>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-black/5 shadow-sm">
-                    <CheckCircle2 className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-bold text-dark/70">Full Guarantee</span>
+                  <div className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
+                    <CheckCircle2 className="w-6 h-6 text-primary" />
+                    <span className="text-sm font-bold text-dark">Full Guarantee</span>
                   </div>
                 </div>
               </div>
@@ -267,7 +262,7 @@ export default function MaltaServices() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       referrerPolicy="no-referrer"
                     />
-                    <div className={`absolute top-4 left-4 w-12 h-12 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-lg z-10`}>
+                    <div className="absolute top-4 left-4 w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-lg z-10">
                       <service.icon className="text-white w-6 h-6" />
                     </div>
                   </div>

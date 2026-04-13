@@ -51,14 +51,14 @@ export default function Hero() {
               </Link>
             </div>
 
-            <div className="mt-12 flex items-center gap-8 text-dark/40">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-primary" />
-                <span className="text-sm">{t.hero.badge1}</span>
+            <div className="mt-12 flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
+                <ShieldCheck className="w-6 h-6 text-primary" />
+                <span className="text-sm font-bold text-dark">{t.hero.badge1}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-primary" />
-                <span className="text-sm">{t.hero.badge2}</span>
+              <div className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
+                <Award className="w-6 h-6 text-primary" />
+                <span className="text-sm font-bold text-dark">{t.hero.badge2}</span>
               </div>
             </div>
           </div>
