@@ -18,7 +18,7 @@ export const translations = {
     hero: {
       title: 'A Tető {gradient} Felett.',
       gradient: 'Mindenek',
-      description: 'Maczkó Zsolt vagyok. Tisztelem és szeretem a szakmámat, ahol a tradicionális tudás a modern technológiával találkozik. Tartós, esztétikus és értékálló megoldásokat kínálok az Ön otthonára.',
+      description: 'Maczkó Zsolt vagyok. Tisztelem és szeretem a szakmámat, ahol a tradicionális tudás a modern technológiával találkozik. Tartós, esztétikus és értékálló megoldásokat kínálok az Ön otthonára. Szakmai elhivatottságomat a tanulmányaim során szerzett jeles bizonyítványom is igazolja, amelyre alapozva ma is a legmagasabb színvonalú munkát végzem. Meggyőződésem, hogy a kiváló elméleti alapok és a precíz gyakorlati megvalósítás kéz a kézben járnak minden projektemnél.',
       ctaPrimary: 'Ingyenes Felmérés',
       ctaSecondary: 'Referenciáink',
       ctaMalta: 'Máltai Szolgáltatások',
@@ -165,7 +165,7 @@ export const translations = {
     hero: {
       title: 'The Roof Above {gradient}.',
       gradient: 'Everything',
-      description: 'I am Zsolt Maczkó. I respect and love my profession, where traditional knowledge meets modern technology. I offer durable, aesthetic, and value-preserving solutions for your home.',
+      description: 'I am Zsolt Maczkó. I respect and love my profession, where traditional knowledge meets modern technology. I offer durable, aesthetic, and value-preserving solutions for your home. My professional commitment is evidenced by the top honors I earned during my studies, which serve as the foundation for the high-quality work I provide today. I am convinced that excellent theoretical foundations and precise practical execution go hand in hand in all my projects.',
       ctaPrimary: 'Free Assessment',
       ctaSecondary: 'Our Portfolio',
       ctaMalta: 'Malta Services',
