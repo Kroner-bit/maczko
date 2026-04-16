@@ -29,7 +29,7 @@ export default function Hero() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div>
             <h1 className="text-5xl md:text-7xl font-display font-bold leading-[1.1] mb-8 text-dark">
               {t.hero.title.split('{gradient}')[0]}

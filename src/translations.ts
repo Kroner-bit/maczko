@@ -86,6 +86,10 @@ export const translations = {
           title: 'Kerti tárolók és egyedi építmények',
           description: 'Egyedi elképzelések megvalósítása az Ön igényei szerint.',
         },
+        {
+          title: 'Biztosítási ügyek intézése',
+          description: 'Káreset vagy felújítás esetén a teljes körű ügyintézést is átvállalom: igény szerint közvetlenül egyeztetek a biztosítótársaságokkal, hogy Önnek ne kelljen az adminisztrációval és a papírmunkával bajlódnia.',
+        },
       ],
       ctaTitle: 'Nem találja, amit keres?',
       ctaDesc: 'Egyedi igények esetén is állunk rendelkezésére. Kérjen ingyenes konzultációt!',
@@ -232,6 +236,10 @@ export const translations = {
         {
           title: 'Garden Sheds & Custom Structures',
           description: 'Construction of sheds and custom structures according to your needs.',
+        },
+        {
+          title: 'Insurance Administration',
+          description: 'In case of damage or renovation, I can handle the full administration: I coordinate directly with insurance companies so you don\'t have to worry about paperwork.',
         },
       ],
       ctaTitle: 'Can\'t find what you\'re looking for?',

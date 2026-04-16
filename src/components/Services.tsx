@@ -10,14 +10,16 @@ import {
   ShieldCheck,
   Paintbrush,
   Wrench,
-  Ruler
+  Ruler,
+  ClipboardCheck
 } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+import { cn } from '@/src/lib/utils';
 
 export default function Services() {
   const { t } = useLanguage();
 
-  const icons = [Layers, Wind, Construction, Droplets, Hammer, Home, ShieldCheck, Paintbrush, Trees, Wrench, Ruler];
+  const icons = [Layers, Wind, Construction, Droplets, Hammer, Home, ShieldCheck, Paintbrush, Trees, Wrench, Ruler, ClipboardCheck];
   const services = t.services.items.map((item, index) => ({
     ...item,
     icon: icons[index % icons.length],
@@ -41,22 +43,33 @@ export default function Services() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-          {services.map((service) => (
-            <div
-              key={service.title}
-              className="group relative p-6 md:p-8 rounded-3xl glass bg-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center gap-6 hover:shadow-md transition-all"
-            >
-              <div className="w-16 h-16 shrink-0 rounded-2xl bg-primary/10 flex items-center justify-center shadow-inner border border-primary/20">
-                <service.icon className="text-primary w-8 h-8" />
+          {services.map((service, index) => {
+            const isLast = index === services.length - 1;
+            return (
+              <div
+                key={service.title}
+                className={cn(
+                  "group relative p-6 md:p-8 rounded-3xl transition-all flex flex-col sm:flex-row items-start sm:items-center gap-6",
+                  isLast 
+                    ? "bg-gradient-to-br from-primary/20 via-primary/5 to-accent/20 border-2 border-primary/20 shadow-lg shadow-primary/5 scale-[1.02]" 
+                    : "glass bg-white shadow-sm hover:shadow-md"
+                )}
+              >
+                <div className={cn(
+                  "w-16 h-16 shrink-0 rounded-2xl flex items-center justify-center shadow-inner border",
+                  isLast ? "bg-white border-primary/30" : "bg-primary/10 border-primary/20"
+                )}>
+                  <service.icon className="text-primary w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-2 text-dark">{service.title}</h3>
+                  <p className="text-dark/60 leading-relaxed text-sm md:text-base">
+                    {service.description}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-bold mb-2 text-dark">{service.title}</h3>
-                <p className="text-dark/60 leading-relaxed text-sm md:text-base">
-                  {service.description}
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Extra CTA in Services as the last list item */}
           <div className="md:col-span-2 p-6 md:p-8 rounded-3xl bg-primary/10 border border-primary/20 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm mt-2">
