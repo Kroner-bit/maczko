@@ -66,7 +66,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">{t.contact.form.phone}</p>
-                  <p className="text-xl font-bold text-dark">+36 30 123 4567</p>
+                  <p className="text-xl text-dark">+36 30 889 5383</p>
                 </div>
               </div>
               <div className="flex items-center gap-6 group">
@@ -75,18 +75,10 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">{t.contact.form.email}</p>
-                  <p className="text-xl font-bold text-dark">info@maczkotetofedes.hu</p>
+                  <p className="text-xl font-bold text-dark">maczkozsolt@icloud.com</p>
                 </div>
               </div>
-              <div className="flex items-center gap-6 group">
-                <div className="w-14 h-14 rounded-2xl bg-white border border-black/5 shadow-sm flex items-center justify-center group-hover:bg-primary transition-all duration-500">
-                  <MapPin className="text-primary group-hover:text-white w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Székhely</p>
-                  <p className="text-xl font-bold text-dark">1121 Budapest, Hegyhát út 12.</p>
-                </div>
-              </div>
+
             </div>
           </div>
 
@@ -143,7 +135,7 @@ export default function Contact() {
                       value={formData.phone}
                       onChange={handleChange}
                       type="tel"
-                      placeholder="+36 30 000 0000"
+                      placeholder="+36 30 889 5383"
                       className="w-full bg-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-dark"
                     />
                   </div>

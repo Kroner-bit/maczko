@@ -27,6 +27,19 @@ service cloud.firestore {
     //   - email: string (required)
     //   - role: string (required, 'admin')
     //
+    // Collection: projects
+    // Document ID: auto-generated or slug
+    // Fields:
+    //   - title: string
+    //   - slug: string
+    //   - category: string
+    //   - location: string
+    //   - date: string
+    //   - description: string
+    //   - images: array of strings
+    //   - features: array of strings
+    //   - createdAt: timestamp
+    //
     // ===============================================================
 
     // Helper Functions
@@ -45,6 +58,19 @@ service cloud.firestore {
           (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin")
         );
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll(['title', 'slug', 'category', 'location', 'date', 'description', 'images', 'features', 'createdAt']) &&
+             data.title is string && data.title.size() > 0 &&
+             data.slug is string && data.slug.size() > 0 &&
+             data.category is string &&
+             data.location is string &&
+             data.date is string &&
+             data.description is string &&
+             data.images is list &&
+             data.features is list &&
+             data.createdAt is timestamp;
     }
 
     function isValidEmail(email) {
@@ -76,6 +102,15 @@ service cloud.firestore {
       allow read, delete: if isAdmin();
       // No updates allowed to submissions
       allow update: if false;
+    }
+
+    match /projects/{projectId} {
+      // Anyone can read projects
+      allow read: if true;
+      // Only admins can write projects
+      allow create: if isAdmin() && isValidProject(request.resource.data);
+      allow update: if isAdmin() && isValidProject(request.resource.data);
+      allow delete: if isAdmin();
     }
 
     match /admins/{email} {

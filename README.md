@@ -8,16 +8,18 @@ A weboldal egy Single Page Application (SPA), amely letisztult esztétikával, k
 
 ### Főbb Funkciók
 
-- **Kétnyelvűség (HU/EN):** Teljes körű fordítási rendszer a `LanguageContext` segítségével.
+- **Kétnyelvűség (HU/EN):** Teljes körű fordítási rendszer a `LanguageContext` segítségével, most már a projekt aloldalakra is kiterjesztve.
+- **Projekt Aloldalak:** Részletes referencia bemutatás egyedi leírásokkal és jellemzőkkel.
+- **Professzionális Galéria:** Swiper integráció az interaktív, érintésbarát képmegjelenítéshez (autoplay, thumbnails, érintés vezérlés).
 - **Máltai Szolgáltatások:** Különálló angol nyelvű aloldal a máltai mészkő-restaurálási és karbantartási munkákhoz.
-- **Modern UI/UX:** Letisztult Tailwind CSS téma, Space Grotesk és Inter betűtípusokkal.
+- **Intelligens Navigáció:** A projekt aloldalakról való visszalépéskor a rendszer automatikusan a Referencia Galériához görget.
+- **Modern UI/UX:** Letisztult Tailwind CSS téma, Space Grotesk és Inter betűtípusokkal, Motion animációkkal.
 - **Kapcsolati űrlap:** Valós idejű adatmentés Firebase Firestore-ba.
 - **Adminisztrációs Felület:** 
     - Biztonságos belépés Google fiókkal.
     - Beérkezett üzenetek listázása, részletes megtekintése és törlése.
     - **Gyorshívás:** Egy kattintással hívható telefonszámok mobilnézetben.
     - **Admin Kezelés:** Dinamikus adminisztrátori lista (adminok hozzáadása/törlése).
-- **Egyedi Megerősítő Rendszer:** iFrame-barát egyedi modális ablakok és értesítések.
 
 ## 🛠 Technológiai Stack
 
@@ -26,6 +28,8 @@ A weboldal egy Single Page Application (SPA), amely letisztult esztétikával, k
 - **Backend/Adatbázis:** Firebase (Firestore, Authentication)
 - **Stílus:** Tailwind CSS 4
 - **Ikonok:** Lucide React
+- **Animáció:** motion (Framer Motion)
+- **Galéria:** Swiper
 - **Routing:** React Router DOM (v7)
 
 ## 📂 Struktúra

@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -10,9 +10,23 @@ import Footer from './components/Footer';
 import Login from './components/Login';
 import Admin from './components/Admin';
 import MaltaServices from './components/MaltaServices';
+import ProjectDetail from './components/ProjectDetail';
 import { LanguageProvider } from './LanguageContext';
 
 function HomePage() {
+  const { hash } = useLocation();
+
+  useEffect(() => {
+    if (hash) {
+      const element = document.getElementById(hash.replace('#', ''));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [hash]);
+
   return (
     <>
       <Navbar />
@@ -36,6 +50,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/malta-services" element={<MaltaServices />} />
+            <Route path="/project/:slug" element={<ProjectDetail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<Navigate to="/" replace />} />

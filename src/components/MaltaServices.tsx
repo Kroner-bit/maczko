@@ -9,14 +9,17 @@ import {
   CheckCircle2,
   CloudRain,
   AlertTriangle,
-  Play
+  Play,
+  Loader2,
+  Search
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import MaltaContact from './MaltaContact';
 import { db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { Project } from '../types';
 
 export default function MaltaServices() {
   const [settings, setSettings] = useState({
@@ -27,6 +30,9 @@ export default function MaltaServices() {
       'https://www.tiktok.com/@maczkotetofedes/video/7485302684845083937'
     ]
   });
+
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -40,6 +46,20 @@ export default function MaltaServices() {
       }
     };
     fetchSettings();
+
+    // Fetch projects
+    const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Project[];
+      setProjects(data);
+      setIsLoadingProjects(false);
+    }, (error) => {
+      console.error("Error fetching projects:", error);
+      setIsLoadingProjects(false);
+    });
 
     // Load TikTok embed script
     const scriptId = 'tiktok-embed-script';
@@ -60,7 +80,10 @@ export default function MaltaServices() {
       }
     }, 1000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
   }, [settings.maltaTiktokUrls]);
 
   const maltaTheme = {
@@ -295,26 +318,45 @@ export default function MaltaServices() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                { title: 'Facade Cleaning', location: 'Sliema', img: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=600' },
-                { title: 'Stone Re-pointing', location: 'Valletta', img: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=600' },
-                { title: 'Boundary Wall', location: 'Mosta', img: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=600' },
-                { title: 'Damp Treatment', location: 'St. Julians', img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=600' }
-              ].map((project, index) => (
-                <div key={index} className="group relative rounded-[32px] overflow-hidden aspect-[3/4] shadow-lg">
-                  <img 
-                    src={project.img} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                    <p className="text-primary font-bold text-xs uppercase tracking-widest mb-2">{project.location}</p>
-                    <h4 className="text-white text-xl font-bold">{project.title}</h4>
-                  </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {isLoadingProjects ? (
+                <div className="col-span-full flex justify-center py-20">
+                  <Loader2 className="w-10 h-10 animate-spin text-primary" />
                 </div>
-              ))}
+              ) : projects.length === 0 ? (
+                <div className="col-span-full text-center py-20 bg-light rounded-[40px] border border-black/5">
+                  <p className="text-dark/40 font-bold uppercase tracking-widest">No recent projects to show</p>
+                </div>
+              ) : (
+                projects.map((project) => (
+                  <Link 
+                    key={project.id || project.slug} 
+                    to={`/project/${project.slug}`}
+                    className="group relative rounded-[32px] overflow-hidden aspect-[4/5] shadow-lg block border border-black/5"
+                  >
+                    <img 
+                      src={project.images[0]} 
+                      alt={project.title} 
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/10 to-transparent opacity-40 group-hover:opacity-60 transition-opacity" />
+                    
+                    <div className="absolute inset-0 p-8 flex flex-col justify-end group-hover:translate-y-0 transition-transform duration-500">
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">{project.category}</p>
+                          <h4 className="text-white text-2xl font-bold">{project.title}</h4>
+                          <p className="text-sm text-white/70">{project.location}</p>
+                        </div>
+                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <Search className="text-white w-5 h-5" />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </section>

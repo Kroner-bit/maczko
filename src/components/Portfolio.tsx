@@ -1,48 +1,32 @@
-import React from 'react';
-import { ExternalLink, Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ExternalLink, Search, Loader2 } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
-
-const projects = [
-  {
-    title: 'Modern Családi Ház',
-    category: 'Zsindelytető',
-    image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800',
-    location: 'Budapest, II. kerület',
-  },
-  {
-    title: 'Lapos Tető Szigetelés',
-    category: 'Szigetelés',
-    image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=800',
-    location: 'Szentendre',
-  },
-  {
-    title: 'Klasszikus Villa',
-    category: 'Tetőfelújítás',
-    image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800',
-    location: 'Gödöllő',
-  },
-  {
-    title: 'Ipari Csarnok',
-    category: 'Bádogozás',
-    image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=800',
-    location: 'Budaörs',
-  },
-  {
-    title: 'Tetőtér Beépítés',
-    category: 'Ácsmunka',
-    image: 'https://images.unsplash.com/photo-1449156001437-3a1442737a31?auto=format&fit=crop&q=80&w=800',
-    location: 'Dunakeszi',
-  },
-  {
-    title: 'Kémény Felújítás',
-    category: 'Kőműves munka',
-    image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=800',
-    location: 'Budapest, XII. kerület',
-  },
-];
+import { db } from '../firebase';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { Project } from '../types';
 
 export default function Portfolio() {
   const { t } = useLanguage();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Project[];
+      setProjects(data);
+      setIsLoading(false);
+    }, (error) => {
+      console.error("Error fetching projects:", error);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <section id="portfolio" className="py-24 relative overflow-hidden bg-white scroll-mt-32">
@@ -68,35 +52,46 @@ export default function Portfolio() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project) => (
-            <div
-              key={project.title}
-              className="group relative aspect-[4/5] rounded-[32px] overflow-hidden border border-black/5 shadow-sm"
-            >
-              <img
-                src={project.image}
-                alt={project.title}
-                className="absolute inset-0 w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/10 to-transparent opacity-40 group-hover:opacity-60 transition-opacity" />
-              
-              <div className="absolute inset-0 p-8 flex flex-col justify-end group-hover:translate-y-0 transition-transform duration-500">
-                <div className="flex justify-between items-end">
-                  <div>
-                    <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">{project.category}</p>
-                    <h3 className="text-2xl font-bold mb-1 text-white">{project.title}</h3>
-                    <p className="text-sm text-white/70">{project.location}</p>
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <Search className="text-white w-5 h-5" />
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="text-center py-20 bg-light rounded-[40px] border border-black/5">
+            <p className="text-dark/40 font-bold uppercase tracking-widest">Nincsenek még elérhető referenciák</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {projects.map((project) => (
+              <Link
+                key={project.id || project.slug}
+                to={`/project/${project.slug}`}
+                className="group relative aspect-[4/5] rounded-[32px] overflow-hidden border border-black/5 shadow-sm block"
+              >
+                <img
+                  src={project.images[0]}
+                  alt={project.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/10 to-transparent opacity-40 group-hover:opacity-60 transition-opacity" />
+                
+                <div className="absolute inset-0 p-8 flex flex-col justify-end group-hover:translate-y-0 transition-transform duration-500">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <p className="text-xs font-bold text-primary uppercase tracking-widest mb-2">{project.category}</p>
+                      <h3 className="text-2xl font-bold mb-1 text-white">{project.title}</h3>
+                      <p className="text-sm text-white/70">{project.location}</p>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <Search className="text-white w-5 h-5" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

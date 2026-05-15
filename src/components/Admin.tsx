@@ -1,10 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Trash2, Mail, Phone, Calendar, MessageSquare, User, Loader2, AlertCircle, ChevronDown, ChevronUp, Settings, Plus, X } from 'lucide-react';
+import { LogOut, Trash2, Mail, Phone, Calendar, MessageSquare, User, Loader2, AlertCircle, ChevronDown, ChevronUp, Settings, Plus, X, Edit2, Layout, Image as ImageIcon, Briefcase, MapPin, Tag, ShieldCheck, ChevronRight } from 'lucide-react';
 import { db, auth } from '../firebase';
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc, getDoc, setDoc, serverTimestamp, addDoc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
+import { Project } from '../types';
+import { cn } from '../lib/utils';
+
+// Swiper imports for live preview
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Thumbs, FreeMode, Autoplay } from 'swiper/modules';
+import type { Swiper as SwiperType } from 'swiper';
+
+// Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/thumbs';
+import 'swiper/css/free-mode';
 
 interface Submission {
   id: string;
@@ -21,10 +35,32 @@ interface AdminEmail {
   addedAt: any;
 }
 
+const DEFAULT_PROJECT: Project = {
+  title: 'Modern Családi Ház',
+  slug: 'modern-csaladi-haz',
+  category: 'Zsindelytető',
+  location: 'Budapest, II. kerület',
+  date: '2023. Október',
+  description: 'Ez a projekt egy modern minimalista családi ház tetőfedését foglalta magában. A tulajdonos választása a tartós és esztétikus bitumenes zsindelyre esett, amely tökéletesen illeszkedik az épület letisztult vonalaihoz. A munka során kiemelt figyelmet fordítottunk a szellőzésre és a rétegrendek pontos kialakítására, biztosítva a hosszú élettartamot és az energiatakarékosságot.',
+  images: [
+    'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=1200',
+    'https://images.unsplash.com/photo-1635424710928-0544e8512eae?auto=format&fit=crop&q=80&w=1200',
+    'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=1200',
+    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1200'
+  ],
+  features: [
+    'Prémium minőségű bitumenes zsindely',
+    'Komplett bádogozás',
+    'Hőszigetelés javítása',
+    'Esővíz elvezető rendszer kiépítése'
+  ]
+};
+
 export default function Admin() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [maltaSubmissions, setMaltaSubmissions] = useState<Submission[]>([]);
   const [adminEmails, setAdminEmails] = useState<AdminEmail[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [settings, setSettings] = useState({
     maltaTiktokEnabled: true,
     maltaTiktokUrls: [
@@ -37,12 +73,17 @@ export default function Admin() {
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'submissions' | 'malta_submissions' | 'admins' | 'settings'>('submissions');
+  const [activeTab, setActiveTab] = useState<'submissions' | 'malta_submissions' | 'admins' | 'settings' | 'projects'>('submissions');
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [isAddingAdmin, setIsAddingAdmin] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; type: 'submission' | 'malta_submission' | 'admin'; id: string; label: string } | null>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isSavingProject, setIsSavingProject] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [thumbsSwiperAdmin, setThumbsSwiperAdmin] = useState<SwiperType | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; type: 'submission' | 'malta_submission' | 'admin' | 'project'; id: string; label: string } | null>(null);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [projectFormData, setProjectFormData] = useState<Project>(DEFAULT_PROJECT);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,6 +133,7 @@ export default function Admin() {
     let unsubscribeSubmissions: (() => void) | undefined;
     let unsubscribeMaltaSubmissions: (() => void) | undefined;
     let unsubscribeAdmins: (() => void) | undefined;
+    let unsubscribeProjects: (() => void) | undefined;
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -162,6 +204,18 @@ export default function Admin() {
           handleFirestoreError(error, OperationType.LIST, 'admins');
         });
 
+        // Fetch projects
+        const qProjects = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+        unsubscribeProjects = onSnapshot(qProjects, (snapshot) => {
+          const data = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Project[];
+          setProjects(data);
+        }, (error) => {
+          handleFirestoreError(error, OperationType.LIST, 'projects');
+        });
+
         // Fetch settings
         const settingsDoc = await getDoc(doc(db, 'settings', 'global'));
         if (settingsDoc.exists()) {
@@ -189,6 +243,7 @@ export default function Admin() {
       if (unsubscribeSubmissions) unsubscribeSubmissions();
       if (unsubscribeMaltaSubmissions) unsubscribeMaltaSubmissions();
       if (unsubscribeAdmins) unsubscribeAdmins();
+      if (unsubscribeProjects) unsubscribeProjects();
     };
   }, [navigate]);
 
@@ -202,12 +257,12 @@ export default function Admin() {
     }
   };
 
-  const handleDelete = (id: string, type: 'submission' | 'malta_submission') => {
+  const handleDelete = (id: string, type: 'submission' | 'malta_submission' | 'project', label?: string) => {
     setDeleteConfirm({
       isOpen: true,
       type,
       id,
-      label: 'ezt az üzenetet'
+      label: label || 'ezt az elemet'
     });
   };
 
@@ -236,6 +291,9 @@ export default function Admin() {
       } else if (type === 'malta_submission') {
         await deleteDoc(doc(db, 'malta_submissions', id));
         setNotification({ message: 'Máltai üzenet sikeresen törölve!', type: 'success' });
+      } else if (type === 'project') {
+        await deleteDoc(doc(db, 'projects', id));
+        setNotification({ message: 'Projekt sikeresen törölve!', type: 'success' });
       } else {
         await deleteDoc(doc(db, 'admins', id.toLowerCase().trim()));
         setNotification({ message: 'Admin sikeresen törölve!', type: 'success' });
@@ -267,6 +325,43 @@ export default function Admin() {
       setNotification({ message: 'Hiba történt az admin hozzáadása során!', type: 'error' });
     } finally {
       setIsAddingAdmin(false);
+    }
+  };
+
+  const handleOpenProjectModal = (project?: Project) => {
+    if (project) {
+      setEditingProject(project);
+      setProjectFormData(project);
+    } else {
+      setEditingProject(null);
+      setProjectFormData(DEFAULT_PROJECT);
+    }
+    setIsProjectModalOpen(true);
+  };
+
+  const handleSaveProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingProject(true);
+    try {
+      const projectData = {
+        ...projectFormData,
+        updatedAt: serverTimestamp(),
+        createdAt: projectFormData.createdAt || serverTimestamp()
+      };
+
+      if (editingProject?.id) {
+        await updateDoc(doc(db, 'projects', editingProject.id), projectData as any);
+        setNotification({ message: 'Projekt sikeresen frissítve!', type: 'success' });
+      } else {
+        await addDoc(collection(db, 'projects'), projectData as any);
+        setNotification({ message: 'Projekt sikeresen hozzáadva!', type: 'success' });
+      }
+      setIsProjectModalOpen(false);
+    } catch (error: any) {
+      handleFirestoreError(error, editingProject ? OperationType.UPDATE : OperationType.CREATE, 'projects');
+      setNotification({ message: `Hiba történt a mentés során: ${error.message}`, type: 'error' });
+    } finally {
+      setIsSavingProject(false);
     }
   };
 
@@ -348,6 +443,12 @@ export default function Admin() {
                 className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'settings' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
               >
                 Beállítások
+              </button>
+              <button
+                onClick={() => setActiveTab('projects')}
+                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'projects' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
+              >
+                Referenciák
               </button>
             </div>
           </div>
@@ -550,6 +651,73 @@ export default function Admin() {
               </div>
             )}
           </>
+        ) : activeTab === 'projects' ? (
+          <div className="space-y-6 md:space-y-8">
+            <div className="flex justify-between items-center px-2">
+              <h2 className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Portfólió Referenciák</h2>
+              <button
+                onClick={() => handleOpenProjectModal()}
+                className="px-6 py-3 rounded-2xl bg-primary text-white font-bold flex items-center gap-2 hover:bg-dark transition-all shadow-lg shadow-primary/20"
+              >
+                <Plus className="w-5 h-5" />
+                Új Projekt
+              </button>
+            </div>
+            
+            {projects.length === 0 ? (
+              <div className={`p-8 md:p-16 rounded-[32px] md:rounded-[40px] border shadow-xl text-center ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Briefcase className="text-primary w-8 h-8 md:w-10 md:h-10" />
+                </div>
+                <h2 className={`text-xl md:text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Nincs még projekt</h2>
+                <p className={darkMode ? 'text-white/60' : 'text-dark/60'}>Vegyen fel új projektet a „Új Projekt” gombbal.</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-6">
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className={`rounded-3xl border shadow-sm overflow-hidden flex flex-col ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}
+                  >
+                    <div className="aspect-video relative overflow-hidden">
+                      <img 
+                        src={project.images[0]} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-white font-bold text-[10px] uppercase tracking-wider">
+                        {project.category}
+                      </div>
+                    </div>
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="mb-4">
+                        <h3 className={`font-bold text-xl mb-1 ${darkMode ? 'text-white' : 'text-dark'}`}>{project.title}</h3>
+                        <p className={`text-xs flex items-center gap-1 ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>
+                          <MapPin className="w-3 h-3" /> {project.location}
+                        </p>
+                      </div>
+                      <div className="mt-auto flex gap-3 pt-4 border-t border-black/5">
+                        <button
+                          onClick={() => handleOpenProjectModal(project)}
+                          className={`flex-1 px-4 py-2 rounded-xl font-bold flex items-center justify-center gap-2 transition-all group/edit ${darkMode ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-light text-dark hover:bg-dark/10'}`}
+                        >
+                          <Edit2 className="w-4 h-4 text-primary group-hover/edit:scale-110 transition-transform" />
+                          Szerkesztés
+                        </button>
+                        <button
+                          onClick={() => handleDelete(project.id!, 'project', project.title)}
+                          className="px-4 py-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         ) : activeTab === 'settings' ? (
           <div className="space-y-6 md:space-y-8">
             <div className={`rounded-[32px] md:rounded-[40px] border shadow-xl p-6 md:p-10 ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
@@ -738,6 +906,279 @@ export default function Admin() {
               >
                 Törlés
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Project Management Modal - Live Preview Editor */}
+      {isProjectModalOpen && (
+        <div className="fixed inset-0 z-[60] flex justify-center items-center p-0 md:p-8">
+          <div
+            onClick={() => !isSavingProject && setIsProjectModalOpen(false)}
+            className="fixed inset-0 bg-dark/80 backdrop-blur-md hidden md:block"
+          />
+          <div className={`relative w-full max-h-full max-w-7xl md:rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden ${darkMode ? 'bg-[#1a1a1a] md:border md:border-white/10' : 'bg-light'}`}>
+            {/* Modal Header/Toolbar */}
+            <div className={`flex-none z-20 flex items-center justify-between px-4 py-3 md:px-8 md:py-4 border-b ${darkMode ? 'bg-dark/80 border-white/10' : 'bg-white/80 border-black/5'} backdrop-blur-xl`}>
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  {editingProject ? <Edit2 className="w-4 h-4 md:w-5 md:h-5" /> : <Plus className="w-4 h-4 md:w-5 md:h-5" />}
+                </div>
+                <div>
+                  <h2 className={`font-bold text-sm md:text-base ${darkMode ? 'text-white' : 'text-dark'}`}>
+                    {editingProject ? 'Szerkesztés' : 'Új Projekt'}
+                  </h2>
+                  <p className={`text-[10px] uppercase tracking-widest font-bold hidden md:block ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>
+                    Live Preview Editor • {projectFormData.slug}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 md:gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsProjectModalOpen(false)}
+                  className={`px-3 py-2 md:px-6 md:py-2 rounded-xl font-bold transition-all text-xs md:text-sm ${darkMode ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-white text-dark hover:bg-dark/5 shadow-sm'}`}
+                >
+                  Mégse
+                </button>
+                <button
+                  onClick={handleSaveProject}
+                  disabled={isSavingProject}
+                  className="px-4 py-2 md:px-8 md:py-2 rounded-xl bg-primary text-white font-bold hover:bg-dark transition-all shadow-lg shadow-primary/20 disabled:opacity-70 flex items-center justify-center gap-2 text-xs md:text-sm"
+                >
+                  {isSavingProject ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Mentés'}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 md:p-12 custom-scrollbar pb-24 md:pb-12">
+              <div className="max-w-5xl mx-auto">
+                <div className="grid lg:grid-cols-12 gap-6 md:gap-12 mb-8 md:mb-16">
+                  <div className="lg:col-span-7 space-y-6 md:space-y-8">
+                    <div>
+                      <div className="hidden md:inline-block px-4 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary uppercase tracking-widest mb-6">
+                        Referencia Projekt
+                      </div>
+                      <input
+                        placeholder="Projekt címe..."
+                        className={`w-full text-2xl md:text-5xl font-display font-bold bg-transparent border-b-2 border-transparent focus:border-primary focus:outline-none transition-all placeholder:opacity-20 ${darkMode ? 'text-white' : 'text-dark'}`}
+                        value={projectFormData.title}
+                        onChange={(e) => {
+                          const title = e.target.value;
+                          const slug = title.toLowerCase()
+                            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                            .replace(/ /g, '-')
+                            .replace(/[^\w-]+/g, '');
+                          setProjectFormData({ ...projectFormData, title, slug });
+                        }}
+                      />
+                    </div>
+                    
+                    <div className="relative">
+                      <textarea
+                        placeholder="Projekt leírása..."
+                        rows={4}
+                        className={`w-full text-sm md:text-lg leading-relaxed font-medium bg-transparent border-l-2 md:border-l-4 border-primary/10 pl-4 md:pl-6 focus:border-primary focus:outline-none transition-all placeholder:opacity-20 resize-none ${darkMode ? 'text-white/70' : 'text-dark/70'}`}
+                        value={projectFormData.description}
+                        onChange={(e) => setProjectFormData({ ...projectFormData, description: e.target.value })}
+                      />
+                    </div>
+
+                    <div className={`p-6 md:p-10 rounded-3xl md:rounded-[2.5rem] shadow-xl relative overflow-hidden group ${darkMode ? 'bg-dark text-white border border-white/5' : 'bg-white border border-black/5 text-dark'}`}>
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2 transition-transform duration-700" />
+                      <div className="flex justify-between items-center mb-6 md:mb-8 relative z-10">
+                        <h3 className="text-lg md:text-2xl font-bold flex items-center gap-2 md:gap-3">
+                          <div className="w-1.5 md:w-2 h-6 md:h-8 bg-primary rounded-full" />
+                          Projekt Jellemzők
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setProjectFormData({ ...projectFormData, features: [...projectFormData.features, ''] })}
+                          className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-primary/10 hover:bg-primary/20'}`}
+                        >
+                          <Plus className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                        </button>
+                      </div>
+                      <ul className="grid sm:grid-cols-2 gap-4 md:gap-6 relative z-10">
+                        {projectFormData.features.map((feature, i) => (
+                          <li key={i} className="flex items-center gap-3 md:gap-4">
+                            <div className="w-5 h-5 md:w-6 md:h-6 shrink-0 rounded-full bg-primary/20 flex items-center justify-center">
+                              <ChevronRight className="w-3 h-3 md:w-4 md:h-4 text-primary" />
+                            </div>
+                            <input
+                              placeholder="Új jellemző..."
+                              className={`bg-transparent border-b focus:border-primary focus:outline-none w-full py-1 text-sm md:text-base font-medium ${darkMode ? 'border-white/10 text-white/90' : 'border-black/10 text-dark/90'}`}
+                              value={feature}
+                              onChange={(e) => {
+                                const newFeatures = [...projectFormData.features];
+                                newFeatures[i] = e.target.value;
+                                setProjectFormData({ ...projectFormData, features: newFeatures });
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newFeatures = projectFormData.features.filter((_, idx) => idx !== i);
+                                setProjectFormData({ ...projectFormData, features: newFeatures });
+                              }}
+                              className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1 md:hover:text-red-400 text-red-500 md:text-inherit transition-all"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-5">
+                    <div className={`p-6 md:p-8 rounded-3xl md:rounded-[2.5rem] border shadow-sm space-y-6 md:space-y-8 ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
+                      <h4 className="text-xs md:text-sm font-bold text-primary uppercase tracking-[0.2em] text-center">Projekt Adatok</h4>
+                      
+                      <div className="space-y-3 md:space-y-4">
+                        <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl md:rounded-2xl border ${darkMode ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/5'}`}>
+                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <Tag className="w-4 h-4 md:w-5 md:h-5" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[9px] md:text-[10px] text-dark/30 uppercase font-bold tracking-wider mb-0.5">Kategória</p>
+                            <input
+                              className={`w-full font-bold bg-transparent border-none p-0 focus:ring-0 text-base md:text-lg ${darkMode ? 'text-white' : 'text-dark'}`}
+                              value={projectFormData.category}
+                              onChange={(e) => setProjectFormData({ ...projectFormData, category: e.target.value })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl md:rounded-2xl border ${darkMode ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/5'}`}>
+                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <MapPin className="w-4 h-4 md:w-5 md:h-5" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[9px] md:text-[10px] text-dark/30 uppercase font-bold tracking-wider mb-0.5">Helyszín</p>
+                            <input
+                              className={`w-full font-bold bg-transparent border-none p-0 focus:ring-0 text-base md:text-lg ${darkMode ? 'text-white' : 'text-dark'}`}
+                              value={projectFormData.location}
+                              onChange={(e) => setProjectFormData({ ...projectFormData, location: e.target.value })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl md:rounded-2xl border ${darkMode ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/5'}`}>
+                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <Calendar className="w-4 h-4 md:w-5 md:h-5" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[9px] md:text-[10px] text-dark/30 uppercase font-bold tracking-wider mb-0.5">Dátum</p>
+                            <input
+                              className={`w-full font-bold bg-transparent border-none p-0 focus:ring-0 text-base md:text-lg ${darkMode ? 'text-white' : 'text-dark'}`}
+                              value={projectFormData.date}
+                              onChange={(e) => setProjectFormData({ ...projectFormData, date: e.target.value })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 p-4 rounded-2xl bg-primary/5 border border-primary/5 opacity-60">
+                          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <ShieldCheck className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-[10px] text-dark/30 uppercase font-bold tracking-wider mb-0.5">Garancia</p>
+                            <p className="font-bold text-dark text-lg">Minden munkára</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 md:mt-12">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <div className="p-2 md:p-3 rounded-xl md:rounded-2xl bg-primary/10 text-primary">
+                        <ImageIcon className="w-5 h-5 md:w-6 md:h-6" />
+                      </div>
+                      <h2 className={`text-xl md:text-3xl font-display font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Projekt Galéria</h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setProjectFormData({ ...projectFormData, images: [...projectFormData.images, ''] })}
+                      className="px-4 py-2 md:px-6 md:py-2 rounded-xl bg-primary/10 text-primary font-bold hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2 w-full md:w-auto"
+                    >
+                      <Plus className="w-4 h-4" /> Kép hozzáadása
+                    </button>
+                  </div>
+
+                  {/* Live Gallery Edit Mode */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
+                    {projectFormData.images.map((img, i) => (
+                      <div key={i} className="group relative aspect-[4/3] md:aspect-video rounded-3xl overflow-hidden border border-black/5 shadow-md bg-dark flex flex-col justify-end">
+                        <img 
+                          src={img || 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=400'} 
+                          alt="Preview" 
+                          className="absolute inset-0 w-full h-full object-cover opacity-60 md:opacity-60 md:group-hover:opacity-100 transition-opacity"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-dark/90 to-transparent flex flex-col justify-end p-3 md:p-4">
+                          <div className="flex gap-2">
+                            <input
+                              className="flex-1 bg-white/20 md:bg-white/10 backdrop-blur-md border border-white/30 md:border-white/20 rounded-xl px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus:border-primary placeholder:text-white/60 font-medium"
+                              value={img}
+                              placeholder="Kép URL..."
+                              onChange={(e) => {
+                                const newImages = [...projectFormData.images];
+                                newImages[i] = e.target.value;
+                                setProjectFormData({ ...projectFormData, images: newImages });
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newImages = projectFormData.images.filter((_, idx) => idx !== i);
+                                setProjectFormData({ ...projectFormData, images: newImages });
+                              }}
+                              className="p-2 md:p-3 rounded-xl bg-red-500 text-white hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20"
+                            >
+                              <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="absolute top-3 md:top-4 left-3 md:left-4 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-md">
+                          #{i + 1}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Real Live Preview with Swiper */}
+                  <div className="relative pt-8 md:pt-12 border-t border-black/5 hidden md:block">
+                    <p className={`text-center text-xs font-bold uppercase tracking-widest mb-8 ${darkMode ? 'text-white/20' : 'text-dark/20'}`}>
+                      Interaktív Előnézet
+                    </p>
+                    <div className="relative">
+                      <Swiper
+                        spaceBetween={10}
+                        navigation={true}
+                        pagination={{ clickable: true, dynamicBullets: true }}
+                        thumbs={{ swiper: thumbsSwiperAdmin && !thumbsSwiperAdmin.destroyed ? thumbsSwiperAdmin : null }}
+                        modules={[FreeMode, Navigation, Thumbs, Pagination]}
+                        className="rounded-[2.5rem] overflow-hidden shadow-2xl mb-6 bg-dark aspect-[16/9] lg:aspect-[21/9]"
+                      >
+                        {projectFormData.images.filter(img => img).map((img, i) => (
+                          <SwiperSlide key={i}>
+                            <img 
+                              src={img} 
+                              alt={`${projectFormData.title} ${i + 1}`} 
+                              className="w-full h-full object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

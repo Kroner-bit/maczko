@@ -151,6 +151,17 @@ export const translations = {
     footer: {
       rights: 'Minden jog fenntartva.',
     },
+    projectDetail: {
+      back: 'Vissza a főoldalra',
+      badge: 'Referencia Projekt',
+      category: 'Kategória',
+      location: 'Helyszín',
+      date: 'Dátum',
+      warranty: 'Garancia',
+      warrantyValue: 'Vállalt garancia',
+      features: 'Projekt Jellemzők',
+      gallery: 'Projekt Galéria',
+    },
   },
   en: {
     nav: {
@@ -301,6 +312,17 @@ export const translations = {
     },
     footer: {
       rights: 'All rights reserved.',
+    },
+    projectDetail: {
+      back: 'Back to home',
+      badge: 'Reference Project',
+      category: 'Category',
+      location: 'Location',
+      date: 'Date',
+      warranty: 'Warranty',
+      warrantyValue: 'Labor warranty included',
+      features: 'Project Features',
+      gallery: 'Project Gallery',
     },
   },
 };

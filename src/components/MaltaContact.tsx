@@ -62,7 +62,7 @@ export default function MaltaContact() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Phone Number</p>
-                  <p className="text-xl font-bold text-dark">+356 7700 0000</p>
+                  <p className="text-xl font-bold text-dark">+36 30 889 5383</p>
                 </div>
               </div>
               <div className="flex items-center gap-6 group">
@@ -71,7 +71,7 @@ export default function MaltaContact() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-dark/40 uppercase tracking-widest mb-1">Email Address</p>
-                  <p className="text-xl font-bold text-dark">malta@maczkoridging.com</p>
+                  <p className="text-xl font-bold text-dark">maczkozsolt@icloud.com</p>
                 </div>
               </div>
               <div className="flex items-center gap-6 group">
@@ -139,7 +139,7 @@ export default function MaltaContact() {
                       value={formData.phone}
                       onChange={handleChange}
                       type="tel"
-                      placeholder="+356 0000 0000"
+                      placeholder="+36 30 889 5383"
                       className="w-full bg-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-dark"
                     />
                   </div>
