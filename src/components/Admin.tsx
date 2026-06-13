@@ -61,7 +61,7 @@ export default function Admin() {
   const [maltaSubmissions, setMaltaSubmissions] = useState<Submission[]>([]);
   const [adminEmails, setAdminEmails] = useState<AdminEmail[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [settings, setSettings] = useState<any>({ maltaPageEnabled: true, facebookPostsEnabled: true, facebookUrls: ['', '', ''] });
+  const [settings, setSettings] = useState<any>({ maltaPageEnabled: true, facebookPostsEnabled: true, facebookPageUrl: 'https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/' });
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -216,14 +216,14 @@ export default function Admin() {
           setSettings({
             maltaPageEnabled: data.maltaPageEnabled ?? true,
             facebookPostsEnabled: data.facebookPostsEnabled ?? true,
-            facebookUrls: data.facebookUrls || ['', '', '']
+            facebookPageUrl: data.facebookPageUrl || 'https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/'
           });
         } else {
           // Initialize settings if they don't exist
           await setDoc(doc(db, 'settings', 'global'), {
             maltaPageEnabled: true,
             facebookPostsEnabled: true,
-            facebookUrls: ['', '', '']
+            facebookPageUrl: 'https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/'
           });
         }
 
@@ -382,12 +382,6 @@ export default function Admin() {
     } finally {
       setIsSavingSettings(false);
     }
-  };
-
-  const handleFacebookUrlChange = (index: number, value: string) => {
-    const newUrls = [...(settings?.facebookUrls || ['', '', ''])];
-    newUrls[index] = value;
-    setSettings({ ...settings, facebookUrls: newUrls });
   };
 
   const toggleExpand = (id: string) => {
@@ -787,22 +781,15 @@ export default function Admin() {
                 {/* Facebook URLs */}
                 {(settings as any).facebookPostsEnabled && (
                   <div className="space-y-4">
-                    <h3 className={`font-bold text-base md:text-lg px-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Facebook Poszt Linkek (Opcionális)</h3>
-                    <div className="grid gap-3 md:gap-4">
-                      {((settings as any).facebookUrls || ['', '', '']).map((url: string, index: number) => (
-                        <div key={index} className="relative">
-                          <span className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-[10px] md:text-xs font-bold text-primary bg-primary/10 w-5 h-5 md:w-6 md:h-6 rounded-lg flex items-center justify-center">
-                            {index + 1}
-                          </span>
-                          <input
-                            type="url"
-                            value={url}
-                            onChange={(e) => handleFacebookUrlChange(index, e.target.value)}
-                            placeholder="https://www.facebook.com/krisztian.maczko.7/posts/..."
-                            className={`w-full border rounded-xl md:rounded-2xl py-3 md:py-4 pl-10 md:pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-sm md:text-base ${darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-light border-black/5 text-dark'}`}
-                          />
-                        </div>
-                      ))}
+                    <h3 className={`font-bold text-base md:text-lg px-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Facebook Oldal Link</h3>
+                    <div className="relative">
+                      <input
+                        type="url"
+                        value={(settings as any).facebookPageUrl || ''}
+                        onChange={(e) => setSettings({ ...settings, facebookPageUrl: e.target.value })}
+                        placeholder="https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/"
+                        className={`w-full border rounded-xl md:rounded-2xl py-3 md:py-4 px-4 pr-4 focus:outline-none focus:border-primary transition-colors text-sm md:text-base ${darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-light border-black/5 text-dark'}`}
+                      />
                     </div>
                   </div>
                 )}

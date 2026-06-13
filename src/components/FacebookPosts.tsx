@@ -7,13 +7,13 @@ export default function FacebookPosts() {
   const { t } = useLanguage();
   const { settings, loading } = useGlobalSettings();
 
-  if (loading || !settings?.facebookPostsEnabled || !settings.facebookUrls) {
+  if (loading || !settings?.facebookPostsEnabled || !settings.facebookPageUrl) {
     return null;
   }
 
-  const validUrls = settings.facebookUrls.filter((url: string) => url.trim() !== '');
+  const pageUrl = settings.facebookPageUrl.trim();
 
-  if (validUrls.length === 0) {
+  if (!pageUrl) {
     return null;
   }
 
@@ -29,29 +29,25 @@ export default function FacebookPosts() {
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {validUrls.map((url: string, index: number) => {
-            return (
-              <div key={`${index}-${url}`} className="bg-white rounded-[32px] overflow-hidden shadow-xl border border-black/5 flex items-center justify-center min-h-[400px]">
-                <iframe
-                  src={`https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(url)}&show_text=true&width=auto`}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 'none', overflow: 'hidden', minHeight: '400px' }}
-                  scrolling="no"
-                  frameBorder="0"
-                  allowFullScreen={true}
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  title={`Facebook Post ${index + 1}`}
-                />
-              </div>
-            );
-          })}
+        <div className="flex justify-center flex-col items-center">
+          <div className="bg-white rounded-[32px] overflow-hidden shadow-xl border border-black/5 flex items-center justify-center max-w-full w-[500px]">
+             <iframe 
+               src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(pageUrl)}&tabs=timeline&width=500&height=600&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId`} 
+               width="500" 
+               height="600" 
+               style={{ border: 'none', overflow: 'hidden', maxWidth: '100%' }}
+               scrolling="no" 
+               frameBorder="0" 
+               allowFullScreen={true} 
+               allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+               title="Facebook Page Feed"
+             />
+          </div>
         </div>
         
         <div className="mt-12 text-center">
              <a
-                href="https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/"
+                href={pageUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex px-8 py-4 rounded-full bg-[#1877F2] text-white font-bold items-center gap-2 hover:bg-[#1877F2]/90 transition-all shadow-lg shadow-[#1877F2]/20"
