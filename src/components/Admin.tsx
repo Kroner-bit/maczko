@@ -61,7 +61,7 @@ export default function Admin() {
   const [maltaSubmissions, setMaltaSubmissions] = useState<Submission[]>([]);
   const [adminEmails, setAdminEmails] = useState<AdminEmail[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [settings, setSettings] = useState({ maltaPageEnabled: true });
+  const [settings, setSettings] = useState<any>({ maltaPageEnabled: true, facebookPostsEnabled: true, facebookUrls: ['', '', ''] });
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -212,11 +212,18 @@ export default function Admin() {
         // Fetch settings
         const settingsDoc = await getDoc(doc(db, 'settings', 'global'));
         if (settingsDoc.exists()) {
-          setSettings(settingsDoc.data() as any);
+          const data = settingsDoc.data();
+          setSettings({
+            maltaPageEnabled: data.maltaPageEnabled ?? true,
+            facebookPostsEnabled: data.facebookPostsEnabled ?? true,
+            facebookUrls: data.facebookUrls || ['', '', '']
+          });
         } else {
           // Initialize settings if they don't exist
           await setDoc(doc(db, 'settings', 'global'), {
-            maltaPageEnabled: true
+            maltaPageEnabled: true,
+            facebookPostsEnabled: true,
+            facebookUrls: ['', '', '']
           });
         }
 
@@ -377,6 +384,12 @@ export default function Admin() {
     }
   };
 
+  const handleFacebookUrlChange = (index: number, value: string) => {
+    const newUrls = [...(settings?.facebookUrls || ['', '', ''])];
+    newUrls[index] = value;
+    setSettings({ ...settings, facebookUrls: newUrls });
+  };
+
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
   };
@@ -408,12 +421,14 @@ export default function Admin() {
               >
                 Üzenetek
               </button>
-              <button
-                onClick={() => setActiveTab('malta_submissions')}
-                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'malta_submissions' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
-              >
-                Máltai Üzenetek
-              </button>
+              {(settings as any).maltaPageEnabled !== false && (
+                <button
+                  onClick={() => setActiveTab('malta_submissions')}
+                  className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'malta_submissions' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
+                >
+                  Máltai Üzenetek
+                </button>
+              )}
               <button
                 onClick={() => setActiveTab('admins')}
                 className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'admins' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
@@ -538,7 +553,7 @@ export default function Admin() {
               </div>
             )}
           </>
-        ) : activeTab === 'malta_submissions' ? (
+        ) : activeTab === 'malta_submissions' && (settings as any).maltaPageEnabled !== false ? (
           <>
             <div className="mb-6 px-2">
               <p className={darkMode ? 'text-white/60' : 'text-dark/60'}>Összesen {maltaSubmissions.length} máltai üzenet érkezett.</p>
@@ -748,6 +763,49 @@ export default function Admin() {
                     />
                   </button>
                 </div>
+
+                {/* Facebook Posts Toggle */}
+                <div className={`flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border ${darkMode ? 'bg-white/5 border-white/10' : 'bg-light border-black/5'}`}>
+                  <div className="pr-4">
+                    <h3 className={`font-bold text-base md:text-lg ${darkMode ? 'text-white' : 'text-dark'}`}>Facebook Posztok</h3>
+                    <p className={darkMode ? 'text-white/60 text-xs md:text-sm' : 'text-dark/60 text-xs md:text-sm'}>Legutóbbi Facebook posztok megjelenítése a főoldalon.</p>
+                  </div>
+                  <button
+                    onClick={() => setSettings({ ...settings, facebookPostsEnabled: !(settings as any).facebookPostsEnabled })}
+                    className={`relative inline-flex h-7 w-12 md:h-8 md:w-14 items-center rounded-full transition-colors focus:outline-none shrink-0 ${
+                      (settings as any).facebookPostsEnabled ? 'bg-primary' : 'bg-dark/20'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-5 w-5 md:h-6 md:w-6 transform rounded-full bg-white transition-transform ${
+                        (settings as any).facebookPostsEnabled ? 'translate-x-6 md:translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Facebook URLs */}
+                {(settings as any).facebookPostsEnabled && (
+                  <div className="space-y-4">
+                    <h3 className={`font-bold text-base md:text-lg px-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Facebook Poszt Linkek (Opcionális)</h3>
+                    <div className="grid gap-3 md:gap-4">
+                      {((settings as any).facebookUrls || ['', '', '']).map((url: string, index: number) => (
+                        <div key={index} className="relative">
+                          <span className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-[10px] md:text-xs font-bold text-primary bg-primary/10 w-5 h-5 md:w-6 md:h-6 rounded-lg flex items-center justify-center">
+                            {index + 1}
+                          </span>
+                          <input
+                            type="url"
+                            value={url}
+                            onChange={(e) => handleFacebookUrlChange(index, e.target.value)}
+                            placeholder="https://www.facebook.com/krisztian.maczko.7/posts/..."
+                            className={`w-full border rounded-xl md:rounded-2xl py-3 md:py-4 pl-10 md:pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-sm md:text-base ${darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-light border-black/5 text-dark'}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="pt-2 md:pt-4">
                   <button

@@ -5,6 +5,7 @@ import Hero from './components/Hero';
 import Services from './components/Services';
 import About from './components/About';
 import Portfolio from './components/Portfolio';
+import FacebookPosts from './components/FacebookPosts';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import Login from './components/Login';
@@ -35,6 +36,7 @@ function HomePage() {
         <Services />
         <About />
         <Portfolio />
+        <FacebookPosts />
         <Contact />
       </main>
       <Footer />

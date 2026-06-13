@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ChevronRight, ShieldCheck, Award, MapPin } from 'lucide-react';
+import { ArrowRight, ChevronRight, ShieldCheck, Award, MapPin, Facebook } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../LanguageContext';
 import { cn } from '@/src/lib/utils';
@@ -67,6 +67,14 @@ export default function Hero() {
                   {t.hero.ctaMalta}
                 </Link>
               )}
+              <a
+                href="https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-[56px] h-[56px] rounded-full bg-[#1877F2] text-white font-bold flex items-center justify-center hover:bg-[#1877F2]/90 transition-all shadow-lg shadow-[#1877F2]/20 shrink-0"
+              >
+                <Facebook className="w-6 h-6 fill-white" />
+              </a>
             </div>
 
             <div className="mt-12 flex flex-wrap items-center gap-4">
