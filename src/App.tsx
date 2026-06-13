@@ -12,6 +12,7 @@ import Login from './components/Login';
 import Admin from './components/Admin';
 import MaltaServices from './components/MaltaServices';
 import ProjectDetail from './components/ProjectDetail';
+import FloatingContactButton from './components/FloatingContactButton';
 import { LanguageProvider } from './LanguageContext';
 
 function HomePage() {
@@ -57,6 +58,7 @@ export default function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <FloatingContactButton />
         </div>
       </Router>
     </LanguageProvider>
