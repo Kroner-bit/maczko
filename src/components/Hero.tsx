@@ -3,10 +3,12 @@ import { ArrowRight, ChevronRight, ShieldCheck, Award, MapPin } from 'lucide-rea
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../LanguageContext';
 import { cn } from '@/src/lib/utils';
+import { useGlobalSettings } from '../hooks/useGlobalSettings';
 
 export default function Hero() {
   const { t } = useLanguage();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { settings } = useGlobalSettings();
 
   const images = [
     "https://kephost.net/p/MjM2ODI5OA.jpg",
@@ -56,13 +58,15 @@ export default function Hero() {
                 {t.hero.ctaSecondary}
                 <ChevronRight className="w-5 h-5" />
               </a>
-              <Link
-                to="/malta-services"
-                className="px-8 py-4 rounded-full bg-secondary text-white font-bold flex items-center gap-2 hover:bg-dark transition-all"
-              >
-                <MapPin className="w-5 h-5" />
-                {t.hero.ctaMalta}
-              </Link>
+              {settings?.maltaPageEnabled && (
+                <Link
+                  to="/malta-services"
+                  className="px-8 py-4 rounded-full bg-secondary text-white font-bold flex items-center gap-2 hover:bg-dark transition-all"
+                >
+                  <MapPin className="w-5 h-5" />
+                  {t.hero.ctaMalta}
+                </Link>
+              )}
             </div>
 
             <div className="mt-12 flex flex-wrap items-center gap-4">

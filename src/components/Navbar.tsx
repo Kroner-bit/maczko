@@ -3,11 +3,13 @@ import { Menu, X, Globe } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { useLanguage } from '../LanguageContext';
 import { Link, useLocation } from 'react-router-dom';
+import { useGlobalSettings } from '../hooks/useGlobalSettings';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const { settings } = useGlobalSettings();
   const location = useLocation();
   const isSubPage = location.pathname !== '/';
   const isMaltaPage = location.pathname === '/malta-services';

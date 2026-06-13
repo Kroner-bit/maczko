@@ -13,40 +13,28 @@ import {
   Loader2,
   Search
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import MaltaContact from './MaltaContact';
 import { db } from '../firebase';
 import { doc, getDoc, collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { Project } from '../types';
+import { useGlobalSettings } from '../hooks/useGlobalSettings';
 
 export default function MaltaServices() {
-  const [settings, setSettings] = useState({
-    maltaTiktokEnabled: true,
-    maltaTiktokUrls: [
-      'https://www.tiktok.com/@maczkotetofedes/video/7485304675713436961',
-      'https://www.tiktok.com/@maczkotetofedes/video/7485303648058608929',
-      'https://www.tiktok.com/@maczkotetofedes/video/7485302684845083937'
-    ]
-  });
-
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const { settings, loading: settingsLoading } = useGlobalSettings();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const settingsDoc = await getDoc(doc(db, 'settings', 'global'));
-        if (settingsDoc.exists()) {
-          setSettings(settingsDoc.data() as any);
-        }
-      } catch (error) {
-        console.error('Error fetching settings:', error);
-      }
-    };
-    fetchSettings();
+    if (!settingsLoading && settings?.maltaPageEnabled === false) {
+      navigate('/');
+    }
+  }, [settings?.maltaPageEnabled, settingsLoading, navigate]);
 
+  useEffect(() => {
     // Fetch projects
     const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -61,30 +49,10 @@ export default function MaltaServices() {
       setIsLoadingProjects(false);
     });
 
-    // Load TikTok embed script
-    const scriptId = 'tiktok-embed-script';
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = 'https://www.tiktok.com/embed.js';
-      script.async = true;
-      document.body.appendChild(script);
-    } else if ((window as any).tiktok?.embed?.lib?.render) {
-      (window as any).tiktok.embed.lib.render();
-    }
-
-    // Re-render TikToks when settings change
-    const timer = setTimeout(() => {
-      if ((window as any).tiktok?.embed?.lib?.render) {
-        (window as any).tiktok.embed.lib.render();
-      }
-    }, 1000);
-
     return () => {
-      clearTimeout(timer);
       unsubscribe();
     };
-  }, [settings.maltaTiktokUrls]);
+  }, []);
 
   const maltaTheme = {
     '--color-primary': '#126b31',
@@ -191,81 +159,6 @@ export default function MaltaServices() {
             </div>
           </div>
         </section>
-
-        {/* TikTok Section */}
-        {settings.maltaTiktokEnabled && (
-          <section className="py-24 bg-white border-y border-black/5 overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="mb-16 text-center">
-                <div className="inline-block px-4 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary uppercase tracking-widest mb-4">
-                  Social Media
-                </div>
-                <h2 className="text-4xl md:text-6xl font-display font-bold text-dark mb-6">
-                  Follow Our <span className="text-gradient">Work</span>
-                </h2>
-                <p className="text-dark/60 max-w-2xl mx-auto">
-                  Check out our latest restoration projects and behind-the-scenes moments on TikTok.
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-8">
-                {settings.maltaTiktokUrls.map((url, index) => {
-                  // Try to extract video ID for direct iframe embed which supports autoplay better
-                  // Handle both short URLs and full URLs
-                  let videoId = null;
-                  const videoIdMatch = url.match(/\/video\/(\d+)/) || url.match(/v=(\d+)/);
-                  
-                  if (videoIdMatch) {
-                    videoId = videoIdMatch[1];
-                  } else if (url.includes('vm.tiktok.com')) {
-                    // For short URLs, we can't resolve them easily on client, 
-                    // but we can try to extract the ID if it's in the path (rare for vm.tiktok.com)
-                    const shortIdMatch = url.match(/vm\.tiktok\.com\/([a-zA-Z0-9]+)/);
-                    if (shortIdMatch) {
-                      // We still need the actual video ID for the embed/v2 URL to work perfectly with autoplay
-                      // If we don't have it, we'll fall back to the blockquote
-                    }
-                  }
-
-                  return (
-                    <div key={`${index}-${url}`} className="rounded-[32px] overflow-hidden shadow-2xl bg-dark aspect-[9/16] relative group">
-                      {videoId ? (
-                        <iframe
-                          src={`https://www.tiktok.com/embed/v2/${videoId}?autoplay=1&loop=1&muted=1&rel=0&controls=0`}
-                          className="w-full h-full border-none pointer-events-none"
-                          allow="autoplay; encrypted-media; picture-in-picture"
-                          title={`TikTok Video ${index + 1}`}
-                        />
-                      ) : (
-                        <blockquote 
-                          className="tiktok-embed w-full h-full pointer-events-none" 
-                          cite={url} 
-                          data-video-id="" 
-                          style={{ maxWidth: '100%', minWidth: '325px', height: '100%', margin: 0, padding: 0 }}
-                        >
-                          <section className="flex items-center justify-center h-full">
-                            <div className="text-white/20">
-                              <Play className="w-12 h-12" />
-                            </div>
-                          </section>
-                        </blockquote>
-                      )}
-                      
-                      {/* Visual Play Icon Overlay (optional, user requested play logo) */}
-                      {!videoId && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                          <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20">
-                            <Play className="w-8 h-8 text-white fill-white" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
 
         {/* Services List */}
         <section id="services" className="bg-white py-24 border-y border-black/5 scroll-mt-32">

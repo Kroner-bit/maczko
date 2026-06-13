@@ -61,14 +61,7 @@ export default function Admin() {
   const [maltaSubmissions, setMaltaSubmissions] = useState<Submission[]>([]);
   const [adminEmails, setAdminEmails] = useState<AdminEmail[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [settings, setSettings] = useState({
-    maltaTiktokEnabled: true,
-    maltaTiktokUrls: [
-      'https://www.tiktok.com/@maczkotetofedes/video/7485304675713436961',
-      'https://www.tiktok.com/@maczkotetofedes/video/7485303648058608929',
-      'https://www.tiktok.com/@maczkotetofedes/video/7485302684845083937'
-    ]
-  });
+  const [settings, setSettings] = useState({ maltaPageEnabled: true });
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -223,12 +216,7 @@ export default function Admin() {
         } else {
           // Initialize settings if they don't exist
           await setDoc(doc(db, 'settings', 'global'), {
-            maltaTiktokEnabled: true,
-            maltaTiktokUrls: [
-              'https://www.tiktok.com/@maczkotetofedes/video/7485304675713436961',
-              'https://www.tiktok.com/@maczkotetofedes/video/7485303648058608929',
-              'https://www.tiktok.com/@maczkotetofedes/video/7485302684845083937'
-            ]
+            maltaPageEnabled: true
           });
         }
 
@@ -370,7 +358,7 @@ export default function Admin() {
     try {
       // Save global settings
       await setDoc(doc(db, 'settings', 'global'), settings);
-      
+
       // Save user-specific dark mode setting
       if (auth.currentUser) {
         await setDoc(doc(db, 'users', auth.currentUser.uid), { 
@@ -382,17 +370,11 @@ export default function Admin() {
       
       setNotification({ message: 'Beállítások sikeresen mentve!', type: 'success' });
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, 'settings/global');
+      handleFirestoreError(error, OperationType.WRITE, 'users/settings');
       setNotification({ message: 'Hiba történt a mentés során!', type: 'error' });
     } finally {
       setIsSavingSettings(false);
     }
-  };
-
-  const handleTiktokUrlChange = (index: number, value: string) => {
-    const newUrls = [...settings.maltaTiktokUrls];
-    newUrls[index] = value;
-    setSettings({ ...settings, maltaTiktokUrls: newUrls });
   };
 
   const toggleExpand = (id: string) => {
@@ -747,45 +729,24 @@ export default function Admin() {
                   </button>
                 </div>
 
-                {/* TikTok Toggle */}
+                {/* Malta Setting Toggle */}
                 <div className={`flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border ${darkMode ? 'bg-white/5 border-white/10' : 'bg-light border-black/5'}`}>
                   <div className="pr-4">
-                    <h3 className={`font-bold text-base md:text-lg ${darkMode ? 'text-white' : 'text-dark'}`}>TikTok Szekció</h3>
-                    <p className={darkMode ? 'text-white/60 text-xs md:text-sm' : 'text-dark/60 text-xs md:text-sm'}>Kapcsolja be vagy ki a TikTok videókat a máltai oldalon.</p>
+                    <h3 className={`font-bold text-base md:text-lg ${darkMode ? 'text-white' : 'text-dark'}`}>Máltai Szolgáltatások Oldal</h3>
+                    <p className={darkMode ? 'text-white/60 text-xs md:text-sm' : 'text-dark/60 text-xs md:text-sm'}>Máltai oldal és gombok láthatóságának bekapcsolása.</p>
                   </div>
                   <button
-                    onClick={() => setSettings({ ...settings, maltaTiktokEnabled: !settings.maltaTiktokEnabled })}
+                    onClick={() => setSettings({ ...settings, maltaPageEnabled: !(settings as any).maltaPageEnabled })}
                     className={`relative inline-flex h-7 w-12 md:h-8 md:w-14 items-center rounded-full transition-colors focus:outline-none shrink-0 ${
-                      settings.maltaTiktokEnabled ? 'bg-primary' : 'bg-dark/20'
+                      (settings as any).maltaPageEnabled ? 'bg-primary' : 'bg-dark/20'
                     }`}
                   >
                     <span
                       className={`inline-block h-5 w-5 md:h-6 md:w-6 transform rounded-full bg-white transition-transform ${
-                        settings.maltaTiktokEnabled ? 'translate-x-6 md:translate-x-7' : 'translate-x-1'
+                        (settings as any).maltaPageEnabled ? 'translate-x-6 md:translate-x-7' : 'translate-x-1'
                       }`}
                     />
                   </button>
-                </div>
-
-                {/* TikTok URLs */}
-                <div className="space-y-4">
-                  <h3 className={`font-bold text-base md:text-lg px-2 ${darkMode ? 'text-white' : 'text-dark'}`}>TikTok Videó Linkek</h3>
-                  <div className="grid gap-3 md:gap-4">
-                    {settings.maltaTiktokUrls.map((url, index) => (
-                      <div key={index} className="relative">
-                        <span className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-[10px] md:text-xs font-bold text-primary bg-primary/10 w-5 h-5 md:w-6 md:h-6 rounded-lg flex items-center justify-center">
-                          {index + 1}
-                        </span>
-                        <input
-                          type="url"
-                          value={url}
-                          onChange={(e) => handleTiktokUrlChange(index, e.target.value)}
-                          placeholder="https://vm.tiktok.com/..."
-                          className={`w-full border rounded-xl md:rounded-2xl py-3 md:py-4 pl-10 md:pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-sm md:text-base ${darkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-light border-black/5 text-dark'}`}
-                        />
-                      </div>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="pt-2 md:pt-4">
