@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Trash2, Mail, Phone, Calendar, MessageSquare, User, Loader2, AlertCircle, ChevronDown, ChevronUp, Settings, Plus, X, Edit2, Layout, Image as ImageIcon, Briefcase, MapPin, Tag, ShieldCheck, ChevronRight } from 'lucide-react';
 import { db, auth } from '../firebase';
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc, getDoc, setDoc, serverTimestamp, addDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc, getDoc, setDoc, serverTimestamp, addDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 import { Project } from '../types';
@@ -68,6 +68,7 @@ export default function Admin() {
   const [darkMode, setDarkMode] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'submissions' | 'malta_submissions' | 'admins' | 'settings' | 'projects' | 'statistics'>('submissions');
+  const [statTab, setStatTab] = useState<'napi' | 'heti' | 'havi'>('napi');
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [isAddingAdmin, setIsAddingAdmin] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
@@ -234,10 +235,22 @@ export default function Admin() {
         // Fetch daily stats
         const qStats = query(collection(db, 'daily_stats'), orderBy('date', 'desc'));
         unsubscribeStats = onSnapshot(qStats, (snapshot) => {
-          const data = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          const cutoffDate = thirtyDaysAgo.toISOString().split('T')[0];
+
+          snapshot.docs.forEach(docSnap => {
+            if (docSnap.id < cutoffDate) {
+              deleteDoc(doc(db, 'daily_stats', docSnap.id)).catch(console.error);
+            }
+          });
+
+          const data = snapshot.docs
+            .filter(docSnap => docSnap.id >= cutoffDate)
+            .map(docSnap => ({
+              id: docSnap.id,
+              ...docSnap.data()
+            }));
           setDailyStats(data);
         }, (error) => {
           console.error("Error fetching stats:", error);
@@ -418,6 +431,70 @@ export default function Admin() {
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
+  };
+
+  const getWeekNumberAndLabel = (d: Date) => {
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+    const weekNo = Math.ceil(( ( (date.getTime() - yearStart.getTime()) / 86400000) + 1)/7);
+    const id = date.getUTCFullYear() + '-W' + String(weekNo).padStart(2, '0');
+    const label = date.getUTCFullYear() + '. ' + weekNo + '. hét';
+    return { id, label };
+  };
+
+  const getMonthNumberAndLabel = (d: Date) => {
+    const months = ['Január', 'Február', 'Március', 'Április', 'Május', 'Június', 'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'];
+    const id = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    const label = d.getFullYear() + ' ' + months[d.getMonth()];
+    return { id, label };
+  };
+
+  const getFilteredStats = () => {
+    const stats = dailyStats;
+    
+    if (statTab === 'napi') {
+      return stats;
+    }
+    
+    const grouped: Record<string, any> = {};
+    
+    stats.forEach(stat => {
+      if (!stat.date) return;
+      const d = new Date(stat.date);
+      let id = '';
+      let label = '';
+      if (statTab === 'heti') {
+        const res = getWeekNumberAndLabel(d);
+        id = res.id; label = res.label;
+      } else {
+        const res = getMonthNumberAndLabel(d);
+        id = res.id; label = res.label;
+      }
+      
+      if (!grouped[id]) {
+        grouped[id] = {
+          id: id,
+          label: label,
+          date: label,
+          ipsSet: new Set<string>(),
+          quoteRequests: 0,
+          totalDurationSeconds: 0
+        };
+      }
+      
+      const g = grouped[id];
+      if (stat.ips) {
+        stat.ips.forEach((ip: string) => g.ipsSet.add(ip));
+      }
+      g.quoteRequests += (stat.quoteRequests || 0);
+      g.totalDurationSeconds += (stat.totalDurationSeconds || 0);
+    });
+    
+    return Object.values(grouped).map(g => ({
+      ...g,
+      ips: Array.from(g.ipsSet)
+    })).sort((a, b) => b.id.localeCompare(a.id));
   };
 
   if (isAuthChecking || isLoading) {
@@ -749,32 +826,59 @@ export default function Admin() {
           </div>
         ) : activeTab === 'statistics' ? (
           <div className="space-y-6 md:space-y-8">
-            <div className="flex justify-between items-center px-2">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-2">
               <h2 className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Weboldal Statisztika</h2>
+              <div className={`flex p-1 rounded-xl w-full md:w-auto overflow-x-auto ${darkMode ? 'bg-white/5' : 'bg-black/5'}`}>
+                <button
+                  onClick={() => setStatTab('napi')}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${statTab === 'napi' ? (darkMode ? 'bg-primary text-white' : 'bg-white shadow-sm text-dark') : (darkMode ? 'text-white/60 hover:text-white' : 'text-dark/60 hover:text-dark')}`}
+                >
+                  Napi
+                </button>
+                <button
+                  onClick={() => setStatTab('heti')}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${statTab === 'heti' ? (darkMode ? 'bg-primary text-white' : 'bg-white shadow-sm text-dark') : (darkMode ? 'text-white/60 hover:text-white' : 'text-dark/60 hover:text-dark')}`}
+                >
+                  Heti
+                </button>
+                <button
+                  onClick={() => setStatTab('havi')}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${statTab === 'havi' ? (darkMode ? 'bg-primary text-white' : 'bg-white shadow-sm text-dark') : (darkMode ? 'text-white/60 hover:text-white' : 'text-dark/60 hover:text-dark')}`}
+                >
+                  Havi
+                </button>
+              </div>
             </div>
             
-            {dailyStats.length === 0 ? (
+            {getFilteredStats().length === 0 ? (
               <div className={`p-8 md:p-16 rounded-[32px] md:rounded-[40px] border shadow-xl text-center ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
-                <h2 className={`text-xl md:text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Nincs még adat</h2>
+                <h2 className={`text-xl md:text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Nincs adat a kiválasztott nézetben</h2>
                 <p className={darkMode ? 'text-white/60' : 'text-dark/60'}>A statisztikák gyűjtése folyamatban van.</p>
               </div>
             ) : (
               <div className="space-y-6">
-                {dailyStats.map((stat, i) => {
-                  const avgTime = stat.sessions ? Math.round(stat.totalDurationMinutes / stat.sessions) : 0;
+                {getFilteredStats().map((stat, i) => {
+                  const uniqueVisitors = stat.ips ? stat.ips.length : 0;
+                  const totalSeconds = stat.totalDurationSeconds || 0;
+                  const avgTimeSeconds = uniqueVisitors ? Math.round(totalSeconds / uniqueVisitors) : 0;
+                  
+                  const avgMinutes = Math.floor(avgTimeSeconds / 60);
+                  const avgRemainingSeconds = avgTimeSeconds % 60;
+                  const avgTimeStr = `${avgMinutes}p ${avgRemainingSeconds}mp`;
+
                   return (
                     <div key={stat.id} className={`p-6 md:p-8 rounded-[32px] border shadow-sm ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'} transition-all hover:shadow-xl`}>
-                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4 border-black/5">
-                        <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>{i === 0 ? 'Ma' : stat.date}</h3>
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b pb-4 border-black/5">
+                        <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>{stat.date || stat.label} {i === 0 && statTab === 'napi' && '(Ma)'}</h3>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-                            <span className="text-blue-500 font-bold text-xl">{stat.views || 0}</span>
+                            <span className="text-blue-500 font-bold text-xl">{uniqueVisitors}</span>
                           </div>
                           <div>
-                            <p className={`text-xs font-bold uppercase ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Oldalmegtekintések</p>
-                            <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Összesen {stat.views || 0}</p>
+                            <p className={`text-xs font-bold uppercase ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Egyedi Látogatók</p>
+                            <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Összesen {uniqueVisitors}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
@@ -787,15 +891,37 @@ export default function Admin() {
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center">
-                            <span className="text-orange-500 font-bold text-xl">{avgTime}</span>
+                          <div className="min-w-[4rem] px-3 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center">
+                            <span className="text-orange-500 font-bold whitespace-nowrap">{avgTimeStr}</span>
                           </div>
                           <div>
-                            <p className={`text-xs font-bold uppercase ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Átlagos idő (perc)</p>
+                            <p className={`text-xs font-bold uppercase ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Átlagos idő</p>
                             <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Látogatónként</p>
                           </div>
                         </div>
                       </div>
+                      {statTab === 'napi' && stat.ips && stat.ips.length > 0 && (
+                        <div className="mt-6 pt-4 border-t border-black/5">
+                          <p className={`text-sm font-bold mb-2 ${darkMode ? 'text-white/60' : 'text-dark/60'}`}>Látogatók IP címei ({stat.ips.length}):</p>
+                          <div className="flex flex-wrap gap-2">
+                            {stat.ips.map((ipStr: string) => {
+                              const [ip, countryCode] = ipStr.split('|');
+                              const getFlagEmoji = (countryCode: string) => {
+                                const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt(0));
+                                return String.fromCodePoint(...codePoints);
+                              };
+                              const safeIp = ipStr.replace(/[.#$/[\]]/g, '_');
+                              const visits = stat.ipCounts?.[safeIp] || 1;
+                              return (
+                                <span key={ipStr} className={`flex items-center gap-1 text-xs px-2 py-1 rounded-md ${darkMode ? 'bg-white/10 text-white/80' : 'bg-black/5 text-dark/80'}`}>
+                                  {countryCode && <span title={countryCode} className="text-sm leading-none mr-0.5">{getFlagEmoji(countryCode)}</span>}
+                                  {ip} {visits > 1 && <span className={`font-bold ml-0.5 ${darkMode ? 'text-white' : 'text-dark'}`}>({visits}x)</span>}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
