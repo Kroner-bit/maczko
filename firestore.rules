@@ -127,6 +127,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /daily_stats/{statId} {
+      // Anyone can increment stats
+      allow create, update: if true;
+      // Only admins can read or delete stats
+      allow read, delete: if isAdmin();
+    }
+
     match /settings/{settingId} {
       // Anyone can read settings
       allow read: if true;

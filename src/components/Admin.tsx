@@ -62,11 +62,12 @@ export default function Admin() {
   const [adminEmails, setAdminEmails] = useState<AdminEmail[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [settings, setSettings] = useState<any>({ maltaPageEnabled: true, facebookPostsEnabled: true, facebookPageUrl: 'https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/', facebookUrls: ['', '', ''] });
+  const [dailyStats, setDailyStats] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'submissions' | 'malta_submissions' | 'admins' | 'settings' | 'projects'>('submissions');
+  const [activeTab, setActiveTab] = useState<'submissions' | 'malta_submissions' | 'admins' | 'settings' | 'projects' | 'statistics'>('submissions');
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [isAddingAdmin, setIsAddingAdmin] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
@@ -127,6 +128,7 @@ export default function Admin() {
     let unsubscribeMaltaSubmissions: (() => void) | undefined;
     let unsubscribeAdmins: (() => void) | undefined;
     let unsubscribeProjects: (() => void) | undefined;
+    let unsubscribeStats: (() => void) | undefined;
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -229,6 +231,18 @@ export default function Admin() {
           });
         }
 
+        // Fetch daily stats
+        const qStats = query(collection(db, 'daily_stats'), orderBy('date', 'desc'));
+        unsubscribeStats = onSnapshot(qStats, (snapshot) => {
+          const data = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setDailyStats(data);
+        }, (error) => {
+          console.error("Error fetching stats:", error);
+        });
+
       } catch (error) {
         console.error('Error checking admin status:', error);
         navigate('/login');
@@ -241,6 +255,7 @@ export default function Admin() {
       if (unsubscribeMaltaSubmissions) unsubscribeMaltaSubmissions();
       if (unsubscribeAdmins) unsubscribeAdmins();
       if (unsubscribeProjects) unsubscribeProjects();
+      if (unsubscribeStats) unsubscribeStats();
     };
   }, [navigate]);
 
@@ -457,6 +472,12 @@ export default function Admin() {
                 className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'projects' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
               >
                 Referenciák
+              </button>
+              <button
+                onClick={() => setActiveTab('statistics')}
+                className={`px-4 py-2 rounded-xl font-bold transition-all whitespace-nowrap shrink-0 ${activeTab === 'statistics' ? 'bg-primary text-white shadow-lg shadow-primary/20' : darkMode ? 'bg-white/5 text-white/40 hover:text-white' : 'bg-white text-dark/40 hover:text-dark'}`}
+              >
+                Statisztika
               </button>
             </div>
           </div>
@@ -723,6 +744,61 @@ export default function Admin() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        ) : activeTab === 'statistics' ? (
+          <div className="space-y-6 md:space-y-8">
+            <div className="flex justify-between items-center px-2">
+              <h2 className={`text-xl md:text-2xl font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Weboldal Statisztika</h2>
+            </div>
+            
+            {dailyStats.length === 0 ? (
+              <div className={`p-8 md:p-16 rounded-[32px] md:rounded-[40px] border shadow-xl text-center ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'}`}>
+                <h2 className={`text-xl md:text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-dark'}`}>Nincs még adat</h2>
+                <p className={darkMode ? 'text-white/60' : 'text-dark/60'}>A statisztikák gyűjtése folyamatban van.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {dailyStats.map((stat, i) => {
+                  const avgTime = stat.sessions ? Math.round(stat.totalDurationMinutes / stat.sessions) : 0;
+                  return (
+                    <div key={stat.id} className={`p-6 md:p-8 rounded-[32px] border shadow-sm ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white border-black/5'} transition-all hover:shadow-xl`}>
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4 border-black/5">
+                        <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>{i === 0 ? 'Ma' : stat.date}</h3>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                            <span className="text-blue-500 font-bold text-xl">{stat.views || 0}</span>
+                          </div>
+                          <div>
+                            <p className={`text-xs font-bold uppercase ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Oldalmegtekintések</p>
+                            <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Összesen {stat.views || 0}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center">
+                            <span className="text-green-500 font-bold text-xl">{stat.quoteRequests || 0}</span>
+                          </div>
+                          <div>
+                            <p className={`text-xs font-bold uppercase ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Ajánlatkérések</p>
+                            <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Összesen {stat.quoteRequests || 0}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center">
+                            <span className="text-orange-500 font-bold text-xl">{avgTime}</span>
+                          </div>
+                          <div>
+                            <p className={`text-xs font-bold uppercase ${darkMode ? 'text-white/40' : 'text-dark/40'}`}>Átlagos idő (perc)</p>
+                            <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-dark'}`}>Látogatónként</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

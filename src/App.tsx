@@ -13,7 +13,13 @@ import Admin from './components/Admin';
 import MaltaServices from './components/MaltaServices';
 import ProjectDetail from './components/ProjectDetail';
 import FloatingContactButton from './components/FloatingContactButton';
+import { useAnalytics } from './hooks/useAnalytics';
 import { LanguageProvider } from './LanguageContext';
+
+function AnalyticsTracker() {
+  useAnalytics();
+  return null;
+}
 
 function HomePage() {
   const { hash } = useLocation();
@@ -59,6 +65,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <FloatingContactButton />
+          <AnalyticsTracker />
         </div>
       </Router>
     </LanguageProvider>

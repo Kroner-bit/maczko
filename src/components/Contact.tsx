@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, MessageSquare, User, AtSign, PhoneCall, CheckCircle2, Loader2 } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
 import { db } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, setDoc, doc, increment } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 
 export default function Contact() {
@@ -27,6 +27,17 @@ export default function Contact() {
         ...formData,
         createdAt: serverTimestamp()
       });
+      
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        await setDoc(doc(db, 'daily_stats', today), {
+          quoteRequests: increment(1),
+          date: today
+        }, { merge: true });
+      } catch (statErr) {
+        console.error('Analytics error:', statErr);
+      }
+      
       setIsSuccess(true);
       setFormData({ name: '', email: '', phone: '', message: '' });
       setTimeout(() => setIsSuccess(false), 5000);
