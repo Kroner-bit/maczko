@@ -90,6 +90,10 @@ export const translations = {
           title: 'Biztosítási ügyek intézése',
           description: 'Káreset vagy felújítás esetén a teljes körű ügyintézést is átvállalom: igény szerint közvetlenül egyeztetek a biztosítótársaságokkal, hogy Önnek ne kelljen az adminisztrációval és a papírmunkával bajlódnia.',
         },
+        {
+          title: 'Veszélyes fakivágás',
+          description: 'Veszélyes fák kivágása, gallyazása, visszavágása alpintechnikával vagy kosaras autóval, teljes biztonsággal.',
+        },
       ],
       ctaTitle: 'Nem találja, amit keres?',
       ctaDesc: 'Egyedi igények esetén is állunk rendelkezésére. Kérjen ingyenes konzultációt!',
@@ -251,6 +255,10 @@ export const translations = {
         {
           title: 'Insurance Administration',
           description: 'In case of damage or renovation, I can handle the full administration: I coordinate directly with insurance companies so you don\'t have to worry about paperwork.',
+        },
+        {
+          title: 'Dangerous Tree Removal',
+          description: 'Safe and professional removal, pruning, and care of dangerous trees using alpine techniques or bucket trucks, even in hard-to-reach places.',
         },
       ],
       ctaTitle: 'Can\'t find what you\'re looking for?',

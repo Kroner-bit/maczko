@@ -74,14 +74,16 @@ service cloud.firestore {
     }
 
     function isValidEmail(email) {
-      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+      return email is string && (email == "" || email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"));
     }
 
     function isValidSubmission(data) {
-      return data.keys().hasAll(['name', 'email', 'message', 'createdAt']) &&
-             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             isValidEmail(data.email) &&
-             data.message is string && data.message.size() > 0 && data.message.size() < 2000 &&
+      return data.keys().hasAll(['name', 'createdAt']) &&
+             data.name is string &&
+             (!('email' in data.keys()) || data.email is string) &&
+             (!('message' in data.keys()) || data.message is string) &&
+             (!('phone' in data.keys()) || data.phone is string) &&
+             (!('services' in data.keys()) || data.services is list) &&
              data.createdAt is timestamp;
     }
 
@@ -125,13 +127,6 @@ service cloud.firestore {
       allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
       // Only admins can manage users
       allow write: if isAdmin();
-    }
-
-    match /daily_stats/{statId} {
-      // Anyone can increment stats
-      allow create, update: if true;
-      // Only admins can read or delete stats
-      allow read, delete: if isAdmin();
     }
 
     match /settings/{settingId} {

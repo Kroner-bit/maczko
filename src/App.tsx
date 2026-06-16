@@ -12,14 +12,9 @@ import Login from './components/Login';
 import Admin from './components/Admin';
 import MaltaServices from './components/MaltaServices';
 import ProjectDetail from './components/ProjectDetail';
+import CallbackPage from './components/CallbackPage';
 import FloatingContactButton from './components/FloatingContactButton';
-import { useAnalytics } from './hooks/useAnalytics';
 import { LanguageProvider } from './LanguageContext';
-
-function AnalyticsTracker() {
-  useAnalytics();
-  return null;
-}
 
 function HomePage() {
   const { hash } = useLocation();
@@ -41,10 +36,10 @@ function HomePage() {
       <main>
         <Hero />
         <Services />
-        <About />
         <Portfolio />
-        <FacebookPosts />
+        <About />
         <Contact />
+        <FacebookPosts />
       </main>
       <Footer />
     </>
@@ -58,6 +53,7 @@ export default function App() {
         <div className="min-h-screen bg-light text-dark selection:bg-primary selection:text-white">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/visszahivas" element={<CallbackPage />} />
             <Route path="/malta-services" element={<MaltaServices />} />
             <Route path="/project/:slug" element={<ProjectDetail />} />
             <Route path="/login" element={<Login />} />
@@ -65,7 +61,6 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <FloatingContactButton />
-          <AnalyticsTracker />
         </div>
       </Router>
     </LanguageProvider>

@@ -1,21 +1,44 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare, User, AtSign, PhoneCall, CheckCircle2, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Mail, Phone, MapPin, Send, MessageSquare, User, AtSign, PhoneCall, CheckCircle2, Loader2, ChevronDown, Check } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+import { cn } from '../lib/utils';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp, setDoc, doc, increment } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 
 export default function Contact() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    message: ''
+    message: '',
+    services: [] as string[]
   });
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleService = (title: string) => {
+    setFormData(prev => ({
+      ...prev,
+      services: prev.services.includes(title) 
+        ? prev.services.filter(s => s !== title)
+        : [...prev.services, title]
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,18 +51,8 @@ export default function Contact() {
         createdAt: serverTimestamp()
       });
       
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        await setDoc(doc(db, 'daily_stats', today), {
-          quoteRequests: increment(1),
-          date: today
-        }, { merge: true });
-      } catch (statErr) {
-        console.error('Analytics error:', statErr);
-      }
-      
       setIsSuccess(true);
-      setFormData({ name: '', email: '', phone: '', message: '' });
+      setFormData({ name: '', email: '', phone: '', message: '', services: [] });
       setTimeout(() => setIsSuccess(false), 5000);
     } catch (err: any) {
       handleFirestoreError(err, OperationType.CREATE, 'submissions');
@@ -150,6 +163,51 @@ export default function Contact() {
                       className="w-full bg-white border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-primary transition-colors text-dark"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2 relative" ref={dropdownRef}>
+                  <label className="text-xs font-bold text-dark/40 uppercase tracking-widest ml-1">
+                    {language === 'hu' ? 'Szolgáltatások típusa (opcionális)' : 'Service type (optional)'}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="w-full bg-white border border-black/5 rounded-2xl py-4 px-4 flex items-center justify-between focus:outline-none focus:border-primary transition-colors text-dark text-left"
+                  >
+                    <div className="flex-1 min-w-0 mr-4">
+                      <div className="flex flex-col gap-1">
+                        {formData.services.length === 0
+                          ? <span className="text-dark/40 text-sm truncate block">{language === 'hu' ? 'Válasszon szolgáltatásokat...' : 'Select services...'}</span>
+                          : formData.services.map(s => (
+                              <span key={s} className="text-sm text-dark truncate block" title={s}>• {s}</span>
+                            ))}
+                      </div>
+                    </div>
+                    <ChevronDown className={`w-5 h-5 flex-shrink-0 self-start text-dark/40 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {isDropdownOpen && (
+                    <div className="absolute z-10 w-full mt-2 bg-white border border-black/5 rounded-2xl shadow-2xl overflow-hidden py-2 max-h-60 overflow-y-auto">
+                      {t.services.items.map((service: { title: string }) => (
+                        <button
+                          key={service.title}
+                          type="button"
+                          onClick={() => toggleService(service.title)}
+                          className="w-full px-4 py-3 text-left hover:bg-black/5 flex items-center justify-between transition-colors group"
+                        >
+                          <span className={cn(
+                            "text-sm group-hover:text-primary transition-colors",
+                            formData.services.includes(service.title) ? "font-bold text-primary" : "text-dark"
+                          )}>
+                            {service.title}
+                          </span>
+                          {formData.services.includes(service.title) && (
+                            <Check className="w-5 h-5 text-primary flex-shrink-0" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">

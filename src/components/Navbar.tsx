@@ -52,21 +52,51 @@ export default function Navbar() {
           : 'bg-transparent py-6'
       )}
     >
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link to={homePath} className="flex items-center md:gap-4 group">
-          <img 
-            src={logoSrc} 
-            alt={`${t.brand.first} ${t.brand.second} Logo`} 
+      <div className="max-w-7xl mx-auto flex justify-between items-center relative">
+        <div className="grid items-center">
+          <Link 
+            to={homePath} 
             className={cn(
-              "w-auto block",
-              (isScrolled || !isHomeLikePage) ? "h-10 md:h-12 lg:h-16" : "h-12 md:h-16 lg:h-24"
+              "flex items-center md:gap-4 group col-start-1 row-start-1 transition-all duration-500",
+              (isScrolled || location.pathname === '/visszahivas') ? "opacity-0 invisible -translate-y-4 lg:opacity-100 lg:visible lg:translate-y-0" : "opacity-100 visible translate-y-0"
             )}
-            referrerPolicy="no-referrer" 
-          />
-          <span className="hidden md:block text-2xl md:text-3xl font-display font-bold tracking-tight text-dark">
-            {t.brand.first} <span className="text-primary">{t.brand.second}</span>
-          </span>
-        </Link>
+          >
+            <img 
+              src={logoSrc} 
+              alt={`${t.brand.first} ${t.brand.second} Logo`} 
+              className={cn(
+                "w-auto block transition-all duration-300",
+                (isScrolled || !isHomeLikePage) ? "h-10 md:h-12 lg:h-16" : "h-12 md:h-16 lg:h-24"
+              )}
+              referrerPolicy="no-referrer" 
+            />
+            <span className="hidden md:block text-2xl md:text-3xl font-display font-bold tracking-tight text-dark">
+              {t.brand.first} <span className="text-primary">{t.brand.second}</span>
+            </span>
+          </Link>
+
+          {/* Mobile Central Button */}
+          <div className={cn(
+            "flex items-center lg:hidden col-start-1 row-start-1 transition-all duration-500",
+            (isScrolled || location.pathname === '/visszahivas') ? "opacity-100 visible translate-y-0" : "opacity-0 invisible translate-y-4"
+          )}>
+            {location.pathname === '/visszahivas' ? (
+              <Link
+                to="/"
+                className="px-4 py-2 rounded-full bg-black/5 text-dark font-bold text-xs sm:text-sm whitespace-nowrap shadow-sm"
+              >
+                {language === 'hu' ? 'Főoldal' : 'Home'}
+              </Link>
+            ) : (
+              <Link
+                to="/visszahivas"
+                className="px-4 py-2 rounded-full bg-primary text-white font-bold text-xs sm:text-sm whitespace-nowrap shadow-lg shadow-primary/30"
+              >
+                {language === 'hu' ? 'Visszahívást kérek!' : 'Call me back!'}
+              </Link>
+            )}
+          </div>
+        </div>
 
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center gap-8">
@@ -128,19 +158,9 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <div className="flex items-center gap-4 lg:hidden">
-          {isMaltaPage ? (
-            <span className="text-xs font-bold text-primary px-2">EN</span>
-          ) : (
-            <button
-              onClick={() => setLanguage(language === 'hu' ? 'en' : 'hu')}
-              className="p-2 rounded-full bg-black/5 text-dark/60"
-            >
-              <Globe className="w-5 h-5" />
-            </button>
-          )}
+        <div className="flex items-center lg:hidden">
           <button
-            className="text-dark"
+            className="text-dark p-1"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X /> : <Menu />}
@@ -182,6 +202,33 @@ export default function Navbar() {
           >
             {t.nav.contact}
           </a>
+          
+          <div className="flex items-center justify-center gap-4 pt-4 border-t border-black/5">
+            <button
+              onClick={() => {
+                setLanguage('hu');
+                setIsMobileMenuOpen(false);
+              }}
+              className={cn(
+                "font-bold px-4 py-2 rounded-lg transition-colors",
+                language === 'hu' ? "bg-primary/10 text-primary" : "text-dark/40 hover:bg-black/5"
+              )}
+            >
+              Magyar
+            </button>
+            <button
+              onClick={() => {
+                setLanguage('en');
+                setIsMobileMenuOpen(false);
+              }}
+              className={cn(
+                "font-bold px-4 py-2 rounded-lg transition-colors",
+                language === 'en' ? "bg-primary/10 text-primary" : "text-dark/40 hover:bg-black/5"
+              )}
+            >
+              English
+            </button>
+          </div>
         </div>
       )}
     </nav>

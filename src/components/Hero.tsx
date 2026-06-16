@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ChevronRight, ShieldCheck, Award, MapPin, Facebook } from 'lucide-react';
+import { ArrowRight, ChevronRight, ShieldCheck, Award, MapPin, Facebook, Sparkles, Layers, Wind, Construction, Droplets, Hammer, Home, Paintbrush, Trees, Wrench, Ruler, Fence, FileSignature, Axe, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../LanguageContext';
 import { cn } from '@/src/lib/utils';
 import { useGlobalSettings } from '../hooks/useGlobalSettings';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Hero() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+  const [isMobileDescExpanded, setIsMobileDescExpanded] = useState(false);
   const { settings } = useGlobalSettings();
 
   const images = [
@@ -15,15 +18,42 @@ export default function Hero() {
     "https://kephost.net/p/MjM2ODI5OQ.jpg"
   ];
 
+  const icons = [
+    Layers,           // 1. Teljes tetők
+    Wind,             // 2. Vihar utáni károk
+    Construction,     // 3. Lapos tetők
+    Droplets,         // 4. Beázások
+    Hammer,           // 5. Kémények
+    Home,             // 6. Régi tetők
+    ShieldCheck,      // 7. Bádogos munkák
+    Fence,            // 8. Kerítések
+    Paintbrush,       // 9. Széldeszka
+    Wrench,           // 10. Alpintechnikai
+    Ruler,            // 11. Zsindelytetők
+    Trees,            // 12. Fa- és fémszerkezetek
+    Home,             // 13. Kerti tárolók
+    FileSignature,    // 14. Biztosítási ügyek
+    Axe               // 15. Veszélyes fakivágás
+  ];
+
   useEffect(() => {
-    const timer = setInterval(() => {
+    const imageTimer = setInterval(() => {
       setCurrentImageIndex((prev) => (prev + 1) % images.length);
     }, 5000);
-    return () => clearInterval(timer);
+    return () => clearInterval(imageTimer);
   }, [images.length]);
 
+  useEffect(() => {
+    const serviceTimer = setInterval(() => {
+      setCurrentServiceIndex((prev) => (prev + 1) % t.services.items.length);
+    }, 5000); // Slower animation (was 3000)
+    return () => clearInterval(serviceTimer);
+  }, [t.services.items.length]);
+
+  const CurrentIcon = icons[currentServiceIndex % icons.length];
+
   return (
-    <section id="home" className="relative min-h-screen flex items-center pt-32 md:pt-44 lg:pt-52 overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center pt-24 md:pt-44 lg:pt-52 pb-16 md:pb-0 overflow-hidden">
       {/* Background Gradients */}
       <div className="absolute top-0 left-0 w-full h-full -z-10 bg-light">
         <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full blur-[120px]" />
@@ -31,29 +61,74 @@ export default function Hero() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 w-full">
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
-          <div>
-            <h1 className="text-5xl md:text-7xl font-display font-bold leading-[1.1] mb-8 text-dark">
-              {t.hero.title.split('{gradient}')[0]}
-              <span className="text-gradient">{t.hero.gradient}</span>
-              {t.hero.title.split('{gradient}')[1]}
+        <div className="grid lg:grid-cols-2 gap-10 md:gap-12 items-center lg:items-start flex-col-reverse flex lg:grid">
+          <div className="text-center lg:text-left pt-6 sm:pt-0">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold leading-[1.1] mb-6 text-dark flex flex-col gap-2">
+              <span>{t.hero.title.split('{gradient}')[0]}</span>
+              <span className="text-gradient text-5xl sm:text-6xl md:text-8xl py-2">{t.hero.gradient}</span>
+              <span>{t.hero.title.split('{gradient}')[1]}</span>
             </h1>
-            
-            <p className="text-lg text-dark/60 max-w-lg mb-10 leading-relaxed">
-              {t.hero.description}
-            </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="h-10 sm:h-12 mb-6 lg:hidden flex items-center justify-center lg:justify-start overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentServiceIndex}
+                  initial={{ y: 30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -30, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-5 py-2.5 rounded-full border border-primary/20 shadow-sm"
+                >
+                  <CurrentIcon className="w-5 h-5 text-primary shrink-0" />
+                  <span className="text-sm sm:text-base font-bold text-dark whitespace-nowrap">
+                    {t.services.items[currentServiceIndex].title}
+                  </span>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+            
+            <div className="mx-auto lg:mx-0 mb-8 md:mb-10 max-w-lg">
+              <div 
+                className={cn(
+                  "text-base sm:text-lg text-dark/60 leading-relaxed transition-all duration-300 relative",
+                  !isMobileDescExpanded ? "line-clamp-4 lg:line-clamp-none overflow-hidden" : ""
+                )}
+              >
+                {t.hero.description}
+                {!isMobileDescExpanded && (
+                  <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white lg:hidden to-transparent pointer-events-none" />
+                )}
+              </div>
+              <button 
+                onClick={() => setIsMobileDescExpanded(!isMobileDescExpanded)}
+                className="mt-3 text-primary text-sm font-bold flex items-center justify-center gap-1.5 mx-auto lg:hidden hover:text-dark transition-colors px-4 py-2 bg-primary/5 rounded-full"
+                aria-expanded={isMobileDescExpanded}
+              >
+                {isMobileDescExpanded ? (
+                  <>
+                    <span>{language === 'hu' ? 'Kevesebb olvasása' : 'Read less'}</span>
+                    <ChevronUp className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    <span>{language === 'hu' ? 'Tovább olvasom' : 'Read more'}</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-3 sm:gap-4">
               <a
                 href="#contact"
-                className="group px-8 py-4 rounded-full bg-primary text-white font-bold flex items-center gap-2 hover:bg-dark"
+                className="w-full sm:w-auto group px-8 py-4 rounded-full bg-primary text-white font-bold flex justify-center items-center gap-2 hover:bg-dark transition-colors"
               >
                 {t.hero.ctaPrimary}
                 <ArrowRight className="w-5 h-5" />
               </a>
               <a
                 href="#portfolio"
-                className="px-8 py-4 rounded-full bg-white border border-black/5 shadow-sm font-bold flex items-center gap-2 hover:bg-light"
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-white border border-black/5 shadow-sm font-bold flex justify-center items-center gap-2 hover:bg-light transition-colors"
               >
                 {t.hero.ctaSecondary}
                 <ChevronRight className="w-5 h-5" />
@@ -61,7 +136,7 @@ export default function Hero() {
               {settings?.maltaPageEnabled && (
                 <Link
                   to="/malta-services"
-                  className="px-8 py-4 rounded-full bg-secondary text-white font-bold flex items-center gap-2 hover:bg-dark transition-all"
+                  className="w-full sm:w-auto px-8 py-4 rounded-full bg-secondary text-white font-bold flex justify-center items-center gap-2 hover:bg-dark transition-colors"
                 >
                   <MapPin className="w-5 h-5" />
                   {t.hero.ctaMalta}
@@ -71,26 +146,27 @@ export default function Hero() {
                 href="https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-[56px] h-[56px] rounded-full bg-[#1877F2] text-white font-bold flex items-center justify-center hover:bg-[#1877F2]/90 transition-all shadow-lg shadow-[#1877F2]/20 shrink-0"
+                className="w-full sm:w-[56px] h-14 sm:h-[56px] rounded-full sm:rounded-full rounded-2xl bg-[#1877F2] text-white font-bold flex items-center justify-center gap-2 hover:bg-[#1877F2]/90 transition-all shadow-lg shadow-[#1877F2]/20 shrink-0"
               >
                 <Facebook className="w-6 h-6 fill-white" />
+                <span className="sm:hidden">Facebook</span>
               </a>
             </div>
 
-            <div className="mt-12 flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
-                <ShieldCheck className="w-6 h-6 text-primary" />
-                <span className="text-sm font-bold text-dark">{t.hero.badge1}</span>
+            <div className="mt-10 md:mt-12 flex flex-wrap justify-center lg:justify-start gap-3 sm:gap-4">
+              <div className="flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
+                <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-primary shrink-0" />
+                <span className="text-xs sm:text-sm font-bold text-dark">{t.hero.badge1}</span>
               </div>
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
-                <Award className="w-6 h-6 text-primary" />
-                <span className="text-sm font-bold text-dark">{t.hero.badge2}</span>
+              <div className="flex items-center gap-2 px-4 sm:px-5 py-2.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
+                <Award className="w-5 h-5 sm:w-6 sm:h-6 text-primary shrink-0" />
+                <span className="text-xs sm:text-sm font-bold text-dark">{t.hero.badge2}</span>
               </div>
             </div>
           </div>
 
-          <div className="relative">
-            <div className="relative z-10 rounded-3xl overflow-hidden border border-black/5 shadow-2xl shadow-primary/5 h-[500px] w-full bg-black/5">
+          <div className="relative w-full max-w-[500px] mx-auto lg:max-w-none flex flex-col items-center">
+            <div className="relative z-10 rounded-3xl overflow-hidden border border-black/5 shadow-2xl shadow-primary/5 h-[300px] sm:h-[400px] md:h-[500px] w-full bg-black/5">
               {images.map((img, index) => (
                 <div
                   key={img}
@@ -107,6 +183,32 @@ export default function Hero() {
                   />
                 </div>
               ))}
+            </div>
+            
+            {/* Desktop Service Animation */}
+            <div className="hidden lg:block w-full max-w-md min-h-[140px] relative z-20 -mt-12">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentServiceIndex}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="absolute inset-0 bg-white/95 backdrop-blur-md shadow-xl shadow-primary/10 p-6 rounded-[24px] border border-primary/20 flex flex-col justify-center gap-2"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
+                      <CurrentIcon className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold text-dark truncate">
+                      {t.services.items[currentServiceIndex].title}
+                    </h3>
+                  </div>
+                  <p className="text-dark/60 text-sm leading-relaxed pl-[52px]">
+                    {t.services.items[currentServiceIndex].description}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
             </div>
             
             {/* Decorative elements */}

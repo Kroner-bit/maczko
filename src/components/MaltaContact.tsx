@@ -26,16 +26,6 @@ export default function MaltaContact() {
         createdAt: serverTimestamp()
       });
       
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        await setDoc(doc(db, 'daily_stats', today), {
-          quoteRequests: increment(1),
-          date: today
-        }, { merge: true });
-      } catch (statErr) {
-        console.error('Analytics error:', statErr);
-      }
-      
       setIsSuccess(true);
       setFormData({ name: '', email: '', phone: '', message: '' });
       setTimeout(() => setIsSuccess(false), 5000);

@@ -45,7 +45,7 @@ export default function Portfolio() {
           <div>
             <a
               href="#contact"
-              className="px-8 py-4 rounded-full bg-primary text-white font-bold hover:bg-dark transition-all flex items-center gap-2"
+              className="hidden md:flex px-8 py-4 rounded-full bg-primary text-white font-bold hover:bg-dark transition-all items-center gap-2"
             >
               {t.contact.form.submit} <ExternalLink className="w-4 h-4" />
             </a>

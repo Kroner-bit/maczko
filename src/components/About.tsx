@@ -1,9 +1,11 @@
-import React from 'react';
-import { Target, Users, Heart, Lightbulb } from 'lucide-react';
+import React, { useState } from 'react';
+import { Target, Users, Heart, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '../LanguageContext';
+import { cn } from '@/src/lib/utils';
 
 export default function About() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [isMobileDescExpanded, setIsMobileDescExpanded] = useState(false);
 
   const icons = [Target, Users, Heart, Lightbulb];
   const values = t.about.values.map((value, index) => ({
@@ -24,12 +26,38 @@ export default function About() {
               <span className="text-gradient">{t.about.gradient}</span>
               {t.about.title.split('{gradient}')[1]}
             </h2>
-            <p className="text-lg text-dark/60 mb-8 leading-relaxed">
-              {t.about.desc1}
-            </p>
-            <p className="text-lg text-dark/60 mb-10 leading-relaxed">
-              {t.about.desc2}
-            </p>
+            
+            <div className="mb-10 relative">
+              <div 
+                className={cn(
+                  "text-lg text-dark/60 leading-relaxed transition-all duration-300 relative",
+                  !isMobileDescExpanded ? "line-clamp-4 lg:line-clamp-none overflow-hidden" : ""
+                )}
+              >
+                <p className="mb-4">{t.about.desc1}</p>
+                <p>{t.about.desc2}</p>
+                {!isMobileDescExpanded && (
+                  <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white lg:hidden to-transparent pointer-events-none" />
+                )}
+              </div>
+              <button 
+                onClick={() => setIsMobileDescExpanded(!isMobileDescExpanded)}
+                className="mt-3 text-primary text-sm font-bold flex flex-row items-center justify-center gap-1.5 lg:hidden hover:text-dark transition-colors px-4 py-2 bg-primary/5 rounded-full"
+                aria-expanded={isMobileDescExpanded}
+              >
+                {isMobileDescExpanded ? (
+                  <>
+                    <span>{language === 'hu' ? 'Kevesebb olvasása' : 'Read less'}</span>
+                    <ChevronUp className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    <span>{language === 'hu' ? 'Tovább olvasom' : 'Read more'}</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </div>
 
             <div className="grid grid-cols-2 gap-8">
               <div>
@@ -43,17 +71,19 @@ export default function About() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {values.map((value) => (
               <div
                 key={value.title}
-                className="p-8 rounded-3xl glass bg-white shadow-sm"
+                className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl glass bg-white shadow-sm flex sm:flex-col items-start gap-4 sm:gap-0"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                  <value.icon className="text-primary w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center sm:mb-6">
+                  <value.icon className="text-primary w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-dark">{value.title}</h3>
-                <p className="text-sm text-dark/50 leading-relaxed">{value.description}</p>
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-3 text-dark">{value.title}</h3>
+                  <p className="text-sm text-dark/50 leading-relaxed">{value.description}</p>
+                </div>
               </div>
             ))}
           </div>
