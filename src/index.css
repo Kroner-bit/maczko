@@ -44,3 +44,19 @@
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
+
+@keyframes heroBadgeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-badge {
+  animation: heroBadgeFadeIn 0.35s ease-out forwards;
+}
+

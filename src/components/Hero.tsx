@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../LanguageContext';
 import { cn } from '@/src/lib/utils';
 import { useGlobalSettings } from '../hooks/useGlobalSettings';
-import { motion, AnimatePresence } from 'motion/react';
+
 
 export default function Hero() {
   const { t, language } = useLanguage();
@@ -70,21 +70,15 @@ export default function Hero() {
             </h1>
 
             <div className="h-10 sm:h-12 mb-6 lg:hidden flex items-center justify-center lg:justify-start overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentServiceIndex}
-                  initial={{ y: 30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -30, opacity: 0 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-5 py-2.5 rounded-full border border-primary/20 shadow-sm"
-                >
-                  <CurrentIcon className="w-5 h-5 text-primary shrink-0" />
-                  <span className="text-sm sm:text-base font-bold text-dark whitespace-nowrap">
-                    {t.services.items[currentServiceIndex].title}
-                  </span>
-                </motion.div>
-              </AnimatePresence>
+              <div
+                key={currentServiceIndex}
+                className="animate-hero-badge flex items-center gap-3 bg-white/60 backdrop-blur-sm px-5 py-2.5 rounded-full border border-primary/20 shadow-sm"
+              >
+                <CurrentIcon className="w-5 h-5 text-primary shrink-0" />
+                <span className="text-sm sm:text-base font-bold text-dark whitespace-nowrap">
+                  {t.services.items[currentServiceIndex].title}
+                </span>
+              </div>
             </div>
             
             <div className="mx-auto lg:mx-0 mb-8 md:mb-10 max-w-lg">
@@ -189,28 +183,22 @@ export default function Hero() {
             
             {/* Desktop Service Animation */}
             <div className="hidden lg:block w-full max-w-md min-h-[140px] relative z-20 -mt-12">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentServiceIndex}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="absolute inset-0 bg-white/95 backdrop-blur-md shadow-xl shadow-primary/10 p-6 rounded-[24px] border border-primary/20 flex flex-col justify-center gap-2"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
-                      <CurrentIcon className="w-5 h-5 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-bold text-dark truncate">
-                      {t.services.items[currentServiceIndex].title}
-                    </h3>
+              <div
+                key={currentServiceIndex}
+                className="animate-hero-badge absolute inset-0 bg-white/95 backdrop-blur-md shadow-xl shadow-primary/10 p-6 rounded-[24px] border border-primary/20 flex flex-col justify-center gap-2"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
+                    <CurrentIcon className="w-5 h-5 text-primary" />
                   </div>
-                  <p className="text-dark/60 text-sm leading-relaxed pl-[52px]">
-                    {t.services.items[currentServiceIndex].description}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
+                  <h3 className="text-xl font-bold text-dark truncate">
+                    {t.services.items[currentServiceIndex].title}
+                  </h3>
+                </div>
+                <p className="text-dark/60 text-sm leading-relaxed pl-[52px]">
+                  {t.services.items[currentServiceIndex].description}
+                </p>
+              </div>
             </div>
             
             {/* Decorative elements */}
