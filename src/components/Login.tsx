@@ -58,10 +58,9 @@ export default function Login() {
       <div className="max-w-md w-full bg-white rounded-[40px] shadow-2xl p-10 border border-black/10">
         <div className="text-center mb-10">
           <img 
-            src="https://kephost.net/p/MjM2NTE3MA.png" 
+            src="/images/logo.png" 
             alt="Logo" 
             className="h-16 md:h-20 w-auto mx-auto mb-8" 
-            referrerPolicy="no-referrer"
           />
           <div className="w-16 h-16 bg-black/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Lock className="text-black w-8 h-8" />

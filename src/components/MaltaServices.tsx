@@ -66,31 +66,31 @@ export default function MaltaServices() {
       title: 'Limestone Wall Restoration',
       description: 'Professional facade cleaning (sandblasting/washing), precise re-pointing, and replacement of crumbling or damaged stones to restore structural integrity and aesthetics.',
       icon: Layers,
-      image: 'https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&q=80&w=800'
+      image: '/images/malta/malta-restoration.webp'
     },
     {
       title: 'Stone Fence Construction & Repair',
       description: 'Expert construction and restoration of traditional Maltese Boundary walls and Rubble walls (Hitan tas-Sejjieh), ensuring they stand the test of time.',
       icon: Construction,
-      image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=800'
+      image: '/images/malta/malta-fence.webp'
     },
     {
       title: 'Structural Damage Repair',
       description: 'Post-storm emergency repairs, professional crack stitching, and static reinforcement to ensure your property remains safe and secure.',
       icon: ShieldAlert,
-      image: 'https://images.unsplash.com/photo-1516939884455-1445c8652f83?auto=format&fit=crop&q=80&w=800'
+      image: '/images/malta/malta-restoration.webp'
     },
     {
       title: 'Moisture & Damp Protection',
       description: 'Comprehensive waterproofing and damp-proofing treatments. We specialize in identifying and treating rising damp, a common challenge in Maltese properties.',
       icon: Droplets,
-      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=800'
+      image: '/images/malta/malta-damp.webp'
     },
     {
       title: 'Stone Surface Treatment',
       description: 'Specialized impregnation treatments for interior and exterior limestone walls to prevent crumbling (porlás) and protect against environmental wear.',
       icon: Hammer,
-      image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800'
+      image: '/images/malta/malta-stone.webp'
     }
   ];
 
@@ -146,10 +146,9 @@ export default function MaltaServices() {
               <div className="relative hidden lg:block">
                 <div className="relative z-10 rounded-[40px] overflow-hidden shadow-2xl border-8 border-white">
                   <img 
-                    src="https://images.unsplash.com/photo-1635424710928-0544e8512eae?auto=format&fit=crop&q=80&w=800" 
+                    src="/images/malta/malta-arch.webp" 
                     alt="Maltese Limestone Architecture" 
                     className="w-full h-auto object-cover"
-                    referrerPolicy="no-referrer"
                   />
                 </div>
                 {/* Decorative elements */}
