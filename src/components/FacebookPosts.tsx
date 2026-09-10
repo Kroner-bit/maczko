@@ -53,6 +53,7 @@ export default function FacebookPosts() {
                     src={srcUrl}
                     width="100%"
                     height="600"
+                    loading="lazy"
                     style={{ border: 'none', overflow: 'hidden', minHeight: '600px', maxWidth: '100%' }}
                     scrolling="no"
                     frameBorder="0"
@@ -71,6 +72,7 @@ export default function FacebookPosts() {
                  src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(iframeUrl)}&tabs=timeline&width=500&height=600&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId`} 
                  width="500" 
                  height="600" 
+                 loading="lazy"
                  style={{ border: 'none', overflow: 'hidden', maxWidth: '100%' }}
                  scrolling="no" 
                  frameBorder="0" 

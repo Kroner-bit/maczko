@@ -14,8 +14,8 @@ export default function Hero() {
   const { settings } = useGlobalSettings();
 
   const images = [
-    "https://kephost.net/p/MjM2ODI5OA.jpg",
-    "https://kephost.net/p/MjM2ODI5OQ.jpg"
+    "/images/hero1.webp",
+    "/images/hero2.webp"
   ];
 
   const icons = [
@@ -179,6 +179,8 @@ export default function Hero() {
                     src={img}
                     alt={t.hero.projectTitle}
                     className="w-full h-full object-cover"
+                    decoding="async"
+                    loading={index === 0 ? "eager" : "lazy"}
                     referrerPolicy="no-referrer"
                   />
                 </div>
