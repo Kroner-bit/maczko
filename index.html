@@ -6,14 +6,92 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="theme-color" content="#F8F9FA" />
-    <title>Maczkó Tetőfedés - Minőségi Tetőfedés & Bádogozás</title>
+    <title>Maczkó Tetőfedés - Minőségi Tetőfedés &amp; Bádogozás</title>
     <meta name="description" content="Maczkó Tetőfedés - Professzionális tetőfedés, bádogozás és tetőfelújítás. Minőségi munka, garanciával." />
     <meta name="keywords" content="tetőfedés, bádogozás, tetőfelújítás, Maczkó Tetőfedés, ácsmunka" />
     <link rel="icon" type="image/png" href="https://kephost.net/p/MjM2NTE3MA.png" />
+
+    <!-- Preconnect to external origins for faster resource loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://kephost.net" />
+
+    <!-- Google Fonts loaded via link tags (non-render-blocking with display=swap) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Inline critical styles for the loading shell -->
+    <style>
+      body { margin: 0; background: #FFFFFF; font-family: "Inter", ui-sans-serif, system-ui, sans-serif; }
+      .app-loading-shell {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: #FFFFFF;
+      }
+      .app-loading-shell .shell-nav {
+        height: 72px;
+        background: rgba(255,255,255,0.95);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        padding: 0 24px;
+        flex-shrink: 0;
+      }
+      .app-loading-shell .shell-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: rgba(18,107,49,0.12);
+        animation: shell-pulse 1.6s ease-in-out infinite;
+      }
+      .app-loading-shell .shell-hero {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 24px 48px;
+        gap: 20px;
+        text-align: center;
+      }
+      .app-loading-shell .shell-line {
+        height: 16px;
+        border-radius: 8px;
+        background: rgba(18,107,49,0.08);
+        animation: shell-pulse 1.6s ease-in-out infinite;
+      }
+      .app-loading-shell .shell-line.w1 { width: min(340px, 75%); height: 38px; border-radius: 12px; }
+      .app-loading-shell .shell-line.w2 { width: min(260px, 60%); height: 22px; animation-delay: 0.15s; }
+      .app-loading-shell .shell-line.w3 { width: min(180px, 45%); animation-delay: 0.3s; }
+      .app-loading-shell .shell-btn {
+        width: min(190px, 50%);
+        height: 48px;
+        border-radius: 24px;
+        background: rgba(18,107,49,0.15);
+        margin-top: 12px;
+        animation: shell-pulse 1.6s ease-in-out infinite;
+        animation-delay: 0.45s;
+      }
+      @keyframes shell-pulse {
+        0%, 100% { opacity: 0.9; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.995); }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-loading-shell" aria-hidden="true">
+        <div class="shell-nav">
+          <div class="shell-logo"></div>
+        </div>
+        <div class="shell-hero">
+          <div class="shell-line w1"></div>
+          <div class="shell-line w2"></div>
+          <div class="shell-line w3"></div>
+          <div class="shell-btn"></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

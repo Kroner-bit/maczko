@@ -74,7 +74,6 @@ export default function Admin() {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isSavingProject, setIsSavingProject] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [thumbsSwiperAdmin, setThumbsSwiperAdmin] = useState<SwiperType | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; type: 'submission' | 'malta_submission' | 'admin' | 'project'; id: string; label: string } | null>(null);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [projectFormData, setProjectFormData] = useState<Project>(DEFAULT_PROJECT);
@@ -1232,8 +1231,7 @@ export default function Admin() {
                         spaceBetween={10}
                         navigation={true}
                         pagination={{ clickable: true, dynamicBullets: true }}
-                        thumbs={{ swiper: thumbsSwiperAdmin && !thumbsSwiperAdmin.destroyed ? thumbsSwiperAdmin : null }}
-                        modules={[FreeMode, Navigation, Thumbs, Pagination]}
+                        modules={[Navigation, Pagination]}
                         className="rounded-[2.5rem] overflow-hidden shadow-2xl mb-6 bg-dark aspect-[16/9] lg:aspect-[21/9]"
                       >
                         {projectFormData.images.filter(img => img).map((img, i) => (

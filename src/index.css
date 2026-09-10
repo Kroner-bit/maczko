@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+/* Google Fonts are loaded via <link> tags in index.html for non-blocking performance */
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;

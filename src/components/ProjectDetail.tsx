@@ -199,7 +199,7 @@ export default function ProjectDetail() {
                 slidesPerView={4}
                 freeMode={true}
                 watchSlidesProgress={true}
-                modules={[FreeMode, Navigation, Thumbs]}
+                modules={[FreeMode, Thumbs]}
                 className="thumbs-swiper h-24 lg:h-32"
                 breakpoints={{
                   640: { slidesPerView: 4 },
