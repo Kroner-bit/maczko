@@ -398,7 +398,7 @@ export default function Admin() {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center gap-6 ${darkMode ? 'bg-[#121212]' : 'bg-light'}`}>
         <img 
-          src="/images/logo.png" 
+          src="/images/logo.webp" 
           alt="Logo" 
           className="h-16 md:h-24 w-auto animate-pulse" 
         />

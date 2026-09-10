@@ -14,9 +14,16 @@ export default function Hero() {
   const { settings } = useGlobalSettings();
 
   const images = [
-    "/images/hero1.webp",
-    "/images/hero2.webp"
+    { desktop: "/images/hero1.webp", mobile: "/images/hero1-mobile.webp" },
+    { desktop: "/images/hero2.webp", mobile: "/images/hero2-mobile.webp" }
   ];
+
+  useEffect(() => {
+    // Pre-cache second image in memory immediately so cross-fade is 100% instant with zero banding
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 640;
+    const preloadImg = new Image();
+    preloadImg.src = isMobile ? images[1].mobile : images[1].desktop;
+  }, []);
 
   const icons = [
     Layers,           // 1. Teljes tetők
@@ -163,20 +170,22 @@ export default function Hero() {
             <div className="relative z-10 rounded-3xl overflow-hidden border border-black/5 shadow-2xl shadow-primary/5 h-[300px] sm:h-[400px] md:h-[500px] w-full bg-black/5">
               {images.map((img, index) => (
                 <div
-                  key={img}
+                  key={img.desktop}
                   className={cn(
-                    "absolute inset-0 transition-opacity duration-1000 flex items-center justify-center overflow-hidden",
-                    currentImageIndex === index ? "opacity-100" : "opacity-0"
+                    "absolute inset-0 transition-opacity duration-700 ease-in-out flex items-center justify-center overflow-hidden",
+                    currentImageIndex === index ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
                   )}
                 >
-                  <img
-                    src={img}
-                    alt={t.hero.projectTitle}
-                    className="w-full h-full object-cover"
-                    decoding="async"
-                    loading={index === 0 ? "eager" : "lazy"}
-                    referrerPolicy="no-referrer"
-                  />
+                  <picture className="w-full h-full">
+                    <source media="(max-width: 640px)" srcSet={img.mobile} type="image/webp" />
+                    <img
+                      src={img.desktop}
+                      alt={t.hero.projectTitle}
+                      className="w-full h-full object-cover"
+                      decoding="async"
+                      loading="eager"
+                    />
+                  </picture>
                 </div>
               ))}
             </div>

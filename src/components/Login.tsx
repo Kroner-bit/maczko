@@ -58,7 +58,7 @@ export default function Login() {
       <div className="max-w-md w-full bg-white rounded-[40px] shadow-2xl p-10 border border-black/10">
         <div className="text-center mb-10">
           <img 
-            src="/images/logo.png" 
+            src="/images/logo.webp" 
             alt="Logo" 
             className="h-16 md:h-20 w-auto mx-auto mb-8" 
           />

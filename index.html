@@ -8,12 +8,14 @@
     <title>Maczkó Tetőfedés - Minőségi Tetőfedés &amp; Bádogozás</title>
     <meta name="description" content="Maczkó Tetőfedés - Professzionális tetőfedés, bádogozás és tetőfelújítás. Minőségi munka, garanciával." />
     <meta name="keywords" content="tetőfedés, bádogozás, tetőfelújítás, Maczkó Tetőfedés, ácsmunka" />
-    <link rel="icon" type="image/png" href="/images/logo.png" />
-    <link rel="apple-touch-icon" href="/images/logo.png" />
+    <link rel="icon" type="image/webp" href="/images/logo.webp" />
+    <link rel="apple-touch-icon" href="/images/logo.webp" />
 
     <!-- High-priority preloads for critical above-the-fold assets -->
-    <link rel="preload" as="image" href="/images/hero1.webp" type="image/webp" fetchpriority="high" />
-    <link rel="preload" as="image" href="/images/logo.png" type="image/png" />
+    <link rel="preload" as="image" href="/images/hero1-mobile.webp" media="(max-width: 640px)" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/hero1.webp" media="(min-width: 641px)" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/logo.webp" type="image/webp" />
+    <link rel="preload" as="image" href="/images/hero2-mobile.webp" media="(max-width: 640px)" type="image/webp" />
 
     <!-- Preconnect to external origins for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,109 +26,94 @@
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
     </noscript>
-
-    <!-- Inline critical styles for instant hero pre-rendering (<300ms) -->
-    <style>
-      :root {
-        --color-primary: #126b31;
-        --color-dark: #1A3A36;
-      }
-      body {
-        margin: 0;
-        background: #FFFFFF;
-        color: var(--color-dark);
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        -webkit-font-smoothing: antialiased;
-      }
-      .prerender-nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        padding: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        max-width: 1280px;
-        margin: 0 auto;
-        z-index: 50;
-        box-sizing: border-box;
-      }
-      .prerender-brand {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        text-decoration: none;
-        color: var(--color-dark);
-      }
-      .prerender-logo {
-        height: 48px;
-        width: auto;
-      }
-      .prerender-title {
-        font-family: "Space Grotesk", sans-serif;
-        font-size: 28px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-      .prerender-hero {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        padding: 120px 24px 48px;
-        max-width: 1280px;
-        margin: 0 auto;
-        box-sizing: border-box;
-      }
-      .prerender-hero-content {
-        max-width: 640px;
-      }
-      .prerender-h1 {
-        font-family: "Space Grotesk", sans-serif;
-        font-size: clamp(36px, 6vw, 64px);
-        font-weight: 700;
-        line-height: 1.1;
-        margin: 0 0 20px;
-        color: var(--color-dark);
-      }
-      .prerender-desc {
-        font-size: 18px;
-        line-height: 1.6;
-        color: rgba(26, 58, 54, 0.7);
-        margin: 0 0 32px;
-      }
-      .prerender-cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px 32px;
-        border-radius: 9999px;
-        background: var(--color-primary);
-        color: #FFFFFF;
-        font-weight: 700;
-        font-size: 16px;
-        text-decoration: none;
-        box-shadow: 0 10px 25px -5px rgba(18, 107, 49, 0.3);
-      }
-    </style>
   </head>
-  <body>
+  <body class="bg-white text-[#1A3A36] antialiased">
     <div id="root">
-      <header class="prerender-nav">
-        <div class="prerender-brand">
-          <img src="/images/logo.png" alt="Maczkó Tetőfedés Logo" class="prerender-logo" width="62" height="48" />
-          <span class="prerender-title">Maczkó <span style="color: #126b31;">Tetőfedés</span></span>
-        </div>
-      </header>
-      <main class="prerender-hero">
-        <div class="prerender-hero-content">
-          <h1 class="prerender-h1">A Tető <span style="color: #126b31;">Mindenek</span> Felett.</h1>
-          <div class="prerender-desc">
-            Maczkó Zsolt vagyok. Tisztelem és szeretem a szakmámat, ahol a tradicionális tudás a modern technológiával találkozik. Tartós, esztétikus és értékálló megoldásokat kínálok az Ön otthonához.
+      <!-- 1:1 Pixel-Perfect Pre-rendered Navigation & Hero for <300ms FCP/LCP -->
+      <nav class="fixed top-0 left-0 right-0 z-50 px-6 bg-transparent py-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center relative">
+          <div class="grid items-center">
+            <a href="/" class="flex items-center md:gap-4 group col-start-1 row-start-1" style="text-decoration:none;">
+              <img src="/images/logo.webp" alt="Maczkó Tetőfedés Logo" class="w-auto block h-12 md:h-16 lg:h-24" width="62" height="48" />
+              <span class="hidden md:block text-2xl md:text-3xl font-display font-bold tracking-tight text-[#1A3A36]" style="font-family: 'Space Grotesk', sans-serif;">
+                Maczkó <span style="color: #126b31;">Tetőfedés</span>
+              </span>
+            </a>
           </div>
-          <a href="#contact" class="prerender-cta">Ingyenes Felmérés</a>
+          <div class="hidden lg:flex items-center gap-8">
+            <a href="#home" class="text-sm font-medium text-[#1A3A36]/70 hover:text-[#126b31] transition-colors" style="text-decoration:none;">Főoldal</a>
+            <a href="#services" class="text-sm font-medium text-[#1A3A36]/70 hover:text-[#126b31] transition-colors" style="text-decoration:none;">Szolgáltatások</a>
+            <a href="#about" class="text-sm font-medium text-[#1A3A36]/70 hover:text-[#126b31] transition-colors" style="text-decoration:none;">Rólunk</a>
+            <a href="#portfolio" class="text-sm font-medium text-[#1A3A36]/70 hover:text-[#126b31] transition-colors" style="text-decoration:none;">Referenciák</a>
+            <a href="#contact" class="text-sm font-medium text-[#1A3A36]/70 hover:text-[#126b31] transition-colors" style="text-decoration:none;">Kapcsolat</a>
+          </div>
+          <div class="hidden lg:flex items-center gap-4">
+            <a href="tel:+36307356074" class="px-6 py-3 rounded-full bg-[#126b31] text-white font-bold text-sm hover:bg-[#1A3A36] transition-all shadow-lg" style="background-color: #126b31; color: #ffffff; text-decoration:none;">
+              Hívjon most!
+            </a>
+          </div>
         </div>
-      </main>
+      </nav>
+
+      <section id="home" class="relative min-h-screen flex items-center pt-24 md:pt-44 lg:pt-52 pb-16 md:pb-0 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 w-full">
+          <div class="grid lg:grid-cols-2 gap-10 md:gap-12 items-center lg:items-start flex-col-reverse flex lg:grid">
+            <div class="text-center lg:text-left pt-6 sm:pt-0">
+              <h1 class="text-4xl sm:text-5xl md:text-7xl font-display font-bold leading-[1.1] mb-6 text-[#1A3A36] flex flex-col gap-2" style="font-family: 'Space Grotesk', sans-serif;">
+                <span>A Tető</span>
+                <span class="text-5xl sm:text-6xl md:text-8xl py-2" style="color: #126b31;">Mindenek</span>
+                <span>Felett.</span>
+              </h1>
+
+              <div class="h-10 sm:h-12 mb-6 lg:hidden flex items-center justify-center lg:justify-start overflow-hidden">
+                <div class="flex items-center gap-3 bg-white/60 backdrop-blur-sm px-5 py-2.5 rounded-full border border-[#126b31]/20 shadow-sm">
+                  <span class="text-sm sm:text-base font-bold text-[#1A3A36] whitespace-nowrap">Tetőépítés és Felújítás</span>
+                </div>
+              </div>
+
+              <div class="mx-auto lg:mx-0 mb-8 md:mb-10 max-w-lg">
+                <div class="text-base sm:text-lg leading-relaxed" style="color: rgba(26, 58, 54, 0.7);">
+                  Maczkó Zsolt vagyok. Tisztelem és szeretem a szakmámat, ahol a tradicionális tudás a modern technológiával találkozik. Tartós, esztétikus és értékálló megoldásokat kínálok az Ön otthonához.
+                </div>
+              </div>
+
+              <div class="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-3 sm:gap-4">
+                <a href="#contact" class="w-full sm:w-auto px-8 py-4 rounded-full font-bold flex justify-center items-center gap-2 text-white" style="background-color: #126b31; text-decoration:none;">
+                  Ingyenes Felmérés
+                </a>
+                <a href="#portfolio" class="w-full sm:w-auto px-8 py-4 rounded-full bg-white border border-black/5 shadow-sm font-bold flex justify-center items-center gap-2 text-[#1A3A36]" style="text-decoration:none;">
+                  Referenciáink
+                </a>
+                <a href="/malta-services" class="w-full sm:w-auto px-8 py-4 rounded-full font-bold flex justify-center items-center gap-2 text-white" style="background-color: #126b31; text-decoration:none;">
+                  Máltai Szolgáltatások
+                </a>
+                <a href="https://www.facebook.com/p/Maczk%C3%B3-Tet%C5%91fed%C3%A9s-100057684518734/" target="_blank" rel="noopener noreferrer" class="w-full sm:w-[56px] h-14 sm:h-[56px] rounded-2xl sm:rounded-full font-bold flex items-center justify-center gap-2 text-white" style="background-color: #1877F2; text-decoration:none;">
+                  <svg class="w-6 h-6 fill-white" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                  <span class="sm:hidden">Facebook</span>
+                </a>
+              </div>
+
+              <div class="mt-10 md:mt-12 flex flex-wrap justify-center lg:justify-start gap-3 sm:gap-4">
+                <div class="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full border shadow-sm" style="background-color: rgba(18, 107, 49, 0.1); border-color: rgba(18, 107, 49, 0.2);">
+                  <span class="text-xs sm:text-sm font-bold text-[#1A3A36]">10+ Év Szakmai Tapasztalat</span>
+                </div>
+                <div class="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full border shadow-sm" style="background-color: rgba(18, 107, 49, 0.1); border-color: rgba(18, 107, 49, 0.2);">
+                  <span class="text-xs sm:text-sm font-bold text-[#1A3A36]">100% Elégedettségi Garancia</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative w-full max-w-[500px] mx-auto lg:max-w-none flex flex-col items-center">
+              <div class="relative z-10 rounded-3xl overflow-hidden border border-black/5 shadow-2xl h-[300px] sm:h-[400px] md:h-[500px] w-full bg-black/5">
+                <picture class="w-full h-full">
+                  <source media="(max-width: 640px)" srcset="/images/hero1-mobile.webp" type="image/webp" />
+                  <img src="/images/hero1.webp" alt="Maczkó Tetőfedés Referencia" class="w-full h-full object-cover" decoding="async" fetchpriority="high" width="600" height="450" />
+                </picture>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
