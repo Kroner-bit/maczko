@@ -55,9 +55,9 @@ export default function Hero() {
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-24 md:pt-44 lg:pt-52 pb-16 md:pb-0 overflow-hidden">
       {/* Background Gradients */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10 bg-light">
-        <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full blur-[120px]" />
+      <div className="absolute top-0 left-0 w-full h-full -z-10 bg-light pointer-events-none">
+        <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full blur-[64px]" />
+        <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full blur-[64px]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-6 w-full">

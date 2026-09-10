@@ -89,7 +89,6 @@ export default function Admin() {
   useEffect(() => {
     const updateMetaTags = () => {
       let themeColorMeta = document.querySelector('meta[name="theme-color"]');
-      let statusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
 
       if (!themeColorMeta) {
         themeColorMeta = document.createElement('meta');
@@ -97,18 +96,10 @@ export default function Admin() {
         document.head.appendChild(themeColorMeta);
       }
 
-      if (!statusBarMeta) {
-        statusBarMeta = document.createElement('meta');
-        statusBarMeta.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
-        document.head.appendChild(statusBarMeta);
-      }
-
       if (darkMode) {
         themeColorMeta.setAttribute('content', '#121212');
-        statusBarMeta.setAttribute('content', 'black');
       } else {
         themeColorMeta.setAttribute('content', '#F8F9FA');
-        statusBarMeta.setAttribute('content', 'default');
       }
     };
 
@@ -116,9 +107,7 @@ export default function Admin() {
 
     return () => {
       const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-      const statusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
       if (themeColorMeta) themeColorMeta.setAttribute('content', '#F8F9FA');
-      if (statusBarMeta) statusBarMeta.setAttribute('content', 'default');
     };
   }, [darkMode]);
 
